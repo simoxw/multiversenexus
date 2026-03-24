@@ -1,0 +1,52 @@
+{
+  "characters": [
+    {
+      "characterId": "scooby-doo",
+      "questions": [
+        { "question": "Qual è il cibo preferito di Scooby-Doo?", "options": ["Pizza", "Scooby Snacks", "Hamburger", "Hot Dog"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Qual è la razza di Scooby-Doo?", "options": ["Alano", "Mastino", "Dalmata", "Bulldog"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Chi è il nipote di Scooby-Doo?", "options": ["Scrappy-Doo", "Duffy-Doo", "Scooby-Dum", "Snappy-Doo"], "correctIndex": 0, "difficulty": "medium", "source": "local", "franchise": "scooby" },
+        { "question": "Di che colore è il collare di Scooby?", "options": ["Rosso", "Blu", "Verde", "Turchese"], "correctIndex": 3, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Come si chiama il furgone della banda?", "options": ["Mystery Machine", "Ghost Bus", "Scooby Van", "Horror Bus"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "scooby" }
+      ]
+    },
+    {
+      "characterId": "hp-harry-potter",
+      "questions": [
+        { "question": "In quale casa viene smistato Harry?", "options": ["Serpeverde", "Grifondoro", "Tassorosso", "Corvonero"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "harry_potter" },
+        { "question": "Qual è la forma del Patronus di Harry?", "options": ["Cervo", "Lupo", "Gatto", "Lontra"], "correctIndex": 0, "difficulty": "medium", "source": "local", "franchise": "harry_potter" },
+        { "question": "Chi è il padrino di Harry Potter?", "options": ["Severus Piton", "Sirius Black", "Remus Lupin", "Albus Silente"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "harry_potter" },
+        { "question": "Qual è il nucleo della bacchetta di Harry?", "options": ["Unicorno", "Drago", "Fenice", "Vane"], "correctIndex": 2, "difficulty": "hard", "source": "local", "franchise": "harry_potter" },
+        { "question": "Come si chiama l'elfo amico di Harry?", "options": ["Kreacher", "Dobby", "Winky", "Hokey"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "harry_potter" }
+      ]
+    },
+    {
+      "characterId": "anime-goku",
+      "questions": [
+        { "question": "Qual è il vero nome Saiyan di Goku?", "options": ["Kakarot", "Bardock", "Raditz", "Broly"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Chi ha insegnato la Kamehameha a Goku?", "options": ["Dio", "Re Kaioh", "Maestro Muten", "Nonno Gohan"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Quale trasformazione raggiunge Goku contro Freezer?", "options": ["Super Saiyan", "Super Saiyan 2", "Super Saiyan 3", "God"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Come si chiama il figlio maggiore di Goku?", "options": ["Goten", "Gohan", "Trunks", "Pan"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Chi è l'eterno rivale di Goku?", "options": ["Piccolo", "Frieza", "Vegeta", "Cell"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "anime" }
+      ]
+    }
+  ],
+  "franchises": [
+    {
+      "franchise": "disney",
+      "questions": [
+        { "question": "Chi è il protagonista di Kingdom Hearts?", "options": ["Riku", "Sora", "Kairi", "Mickey"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "disney" },
+        { "question": "Qual è l'arma iconica di Sora?", "options": ["Spada Laser", "Keyblade", "Buster Sword", "Gungnir"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "disney" },
+        { "question": "Come si chiama l'amico di Simba col muso lungo?", "options": ["Timon", "Pumbaa", "Zazu", "Rafiki"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "disney" }
+      ]
+    },
+    {
+      "franchise": "final_fantasy",
+      "questions": [
+        { "question": "Chi è il protagonista di Final Fantasy VII?", "options": ["Squall", "Cloud", "Noctis", "Tidus"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "final_fantasy" },
+        { "question": "Come si chiama la spada enorme di Cloud?", "options": ["Masamune", "Buster Sword", "Gunblade", "Excalibur"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "final_fantasy" }
+      ]
+    }
+  ],
+  "history": []
+}

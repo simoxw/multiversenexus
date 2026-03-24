@@ -1,0 +1,308 @@
+{
+  "Mysterians": [
+    {
+      "id": "scooby-doo",
+      "name": "Scooby-Doo",
+      "img": "characters/scooby-doo.webp"
+    },
+    {
+      "id": "shaggy-rogers",
+      "name": "Shaggy Rogers",
+      "img": "characters/shaggy-rogers.webp"
+    },
+    {
+      "id": "velma-dinkley",
+      "name": "Velma Dinkley",
+      "img": "characters/velma-dinkley.webp"
+    },
+    {
+      "id": "fred-jones",
+      "name": "Fred Jones",
+      "img": "characters/fred-jones.webp"
+    },
+    {
+      "id": "daphne-blake",
+      "name": "Daphne Blake",
+      "img": "characters/daphne-blake.webp"
+    },
+    {
+      "id": "courage",
+      "name": "Leone il Cane Fifone",
+      "img": "characters/courage.webp"
+    },
+    {
+      "id": "eustace",
+      "name": "Eustachio Bagge",
+      "img": "characters/eustace.webp"
+    },
+    {
+      "id": "muriel",
+      "name": "Muriel Bagge",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=muriel"
+    },
+    {
+      "id": "director",
+      "name": "Il Direttore",
+      "img": "characters/director.webp"
+    },
+    {
+      "id": "katz",
+      "name": "Katz",
+      "img": "characters/katz.webp"
+    },
+    {
+      "id": "harry-potter",
+      "name": "Harry Potter",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=harry-potter"
+    },
+    {
+      "id": "hermione-granger",
+      "name": "Hermione Granger",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=hermione-granger"
+    },
+    {
+      "id": "severus-snape",
+      "name": "Severus Piton",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=severus-snape"
+    },
+    {
+      "id": "albus-dumbledore",
+      "name": "Albus Silente",
+      "img": "characters/albus-dumbledore.webp"
+    },
+    {
+      "id": "voldemort",
+      "name": "Lord Voldemort",
+      "img": "characters/voldemort.webp"
+    },
+    {
+      "id": "luna-lovegood",
+      "name": "Luna Lovegood",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=luna-lovegood"
+    },
+    {
+      "id": "hagrid",
+      "name": "Rubeus Hagrid",
+      "img": "characters/hagrid.webp"
+    },
+    {
+      "id": "bellatrix",
+      "name": "Bellatrix Lestrange",
+      "img": "characters/bellatrix.webp"
+    },
+    {
+      "id": "draco-malfoy",
+      "name": "Draco Malfoy",
+      "img": "characters/draco-malfoy.webp"
+    },
+    {
+      "id": "sirius-black",
+      "name": "Sirius Black",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=sirius-black"
+    }
+  ],
+  "Ethereals": [
+    {
+      "id": "sora",
+      "name": "Sora",
+      "img": "characters/sora.webp"
+    },
+    {
+      "id": "riku",
+      "name": "Riku",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=riku"
+    },
+    {
+      "id": "kairi",
+      "name": "Kairi",
+      "img": "characters/kairi.webp"
+    },
+    {
+      "id": "mickey",
+      "name": "Topolino",
+      "img": "characters/mickey.webp"
+    },
+    {
+      "id": "donald",
+      "name": "Paperino",
+      "img": "characters/donald.webp"
+    },
+    {
+      "id": "goofy",
+      "name": "Pippo",
+      "img": "characters/goofy.webp"
+    },
+    {
+      "id": "aqua",
+      "name": "Aqua",
+      "img": "characters/aqua.webp"
+    },
+    {
+      "id": "terra",
+      "name": "Terra",
+      "img": "characters/terra.webp"
+    },
+    {
+      "id": "ventus",
+      "name": "Ventus",
+      "img": "characters/ventus.webp"
+    },
+    {
+      "id": "axel",
+      "name": "Axel",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=axel"
+    },
+    {
+      "id": "maleficent",
+      "name": "Malefica",
+      "img": "characters/maleficent.webp"
+    },
+    {
+      "id": "stitch",
+      "name": "Stitch",
+      "img": "characters/stitch.webp"
+    },
+    {
+      "id": "genie",
+      "name": "Genio",
+      "img": "characters/genie.webp"
+    },
+    {
+      "id": "elsa",
+      "name": "Elsa",
+      "img": "characters/elsa.webp"
+    },
+    {
+      "id": "hercules",
+      "name": "Hercules",
+      "img": "characters/hercules.webp"
+    },
+    {
+      "id": "simba",
+      "name": "Simba",
+      "img": "characters/simba.webp"
+    },
+    {
+      "id": "baymax",
+      "name": "Baymax",
+      "img": "characters/baymax.webp"
+    },
+    {
+      "id": "mulan",
+      "name": "Mulan",
+      "img": "characters/mulan.webp"
+    },
+    {
+      "id": "ursula",
+      "name": "Ursula",
+      "img": "characters/ursula.webp"
+    },
+    {
+      "id": "jack-skellington",
+      "name": "Jack Skellington",
+      "img": "characters/jack-skellington.webp"
+    }
+  ],
+  "Strikers": [
+    {
+      "id": "goku",
+      "name": "Goku",
+      "img": "characters/goku.webp"
+    },
+    {
+      "id": "vegeta",
+      "name": "Vegeta",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=vegeta"
+    },
+    {
+      "id": "naruto",
+      "name": "Naruto Uzumaki",
+      "img": "characters/naruto.webp"
+    },
+    {
+      "id": "sasuke",
+      "name": "Sasuke Uchiha",
+      "img": "characters/sasuke.webp"
+    },
+    {
+      "id": "luffy",
+      "name": "Monkey D. Luffy",
+      "img": "characters/luffy.webp"
+    },
+    {
+      "id": "zoro",
+      "name": "Roronoa Zoro",
+      "img": "characters/zoro.webp"
+    },
+    {
+      "id": "eren",
+      "name": "Eren Yeager",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=eren"
+    },
+    {
+      "id": "mikasa",
+      "name": "Mikasa Ackerman",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=mikasa"
+    },
+    {
+      "id": "saitama",
+      "name": "Saitama",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=saitama"
+    },
+    {
+      "id": "midoriya",
+      "name": "Izuku Midoriya",
+      "img": "characters/midoriya.webp"
+    },
+    {
+      "id": "cloud",
+      "name": "Cloud Strife",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=cloud"
+    },
+    {
+      "id": "sephiroth",
+      "name": "Sephiroth",
+      "img": "characters/sephiroth.webp"
+    },
+    {
+      "id": "tifa",
+      "name": "Tifa Lockhart",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=tifa"
+    },
+    {
+      "id": "aerith",
+      "name": "Aerith Gainsborough",
+      "img": "characters/aerith.webp"
+    },
+    {
+      "id": "zack",
+      "name": "Zack Fair",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=zack"
+    },
+    {
+      "id": "yuffie",
+      "name": "Yuffie Kisaragi",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=yuffie"
+    },
+    {
+      "id": "squall",
+      "name": "Squall Leonhart",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=squall"
+    },
+    {
+      "id": "noctis",
+      "name": "Noctis Lucis Caelum",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=noctis"
+    },
+    {
+      "id": "lightning",
+      "name": "Lightning",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=lightning"
+    },
+    {
+      "id": "vivi",
+      "name": "Vivi Ornitier",
+      "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=vivi"
+    }
+  ]
+}

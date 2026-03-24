@@ -1,0 +1,20 @@
+{
+  "name": "Multiverse Nexus - Lore RPG",
+  "short_name": "Nexus RPG",
+  "description": "RPG tattico multiverso con battaglie ATB, quiz lore e sincronizzazione personaggi.",
+  "start_url": "/multiversenexus/",
+  "scope": "/multiversenexus/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0d1a",
+  "theme_color": "#7c3aed",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
