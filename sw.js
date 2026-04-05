@@ -26,6 +26,21 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+
+  // Never intercept image files or Vite HMR / websocket requests — let browser handle them natively
+  if (
+    url.pathname.startsWith('/characters/') ||
+    url.pathname.match(/\.(webp|png|jpg|jpeg|gif|svg|ico)$/) ||
+    url.pathname.startsWith('/@') ||
+    url.pathname.startsWith('/node_modules') ||
+    url.protocol === 'ws:' ||
+    url.protocol === 'wss:'
+  ) {
+    return; // Pass through — no SW interception
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const networkFetch = fetch(event.request)
