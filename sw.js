@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mv-nexus-v2';
+const CACHE_NAME = 'mv-nexus-v3';
 const ASSETS_TO_CACHE = [];
 
 self.addEventListener('install', (event) => {

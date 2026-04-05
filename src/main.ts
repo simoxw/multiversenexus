@@ -10,8 +10,11 @@ import { RosterService } from './engine/roster.service.ts'
 import { QuizService } from './services/quiz.service.ts'
 import { InventoryService } from './engine/inventory.service.ts'
 import { StatsModalUI } from './ui/stats-modal.ui.ts'
+import type { GameCharacter } from './types/game.types.ts'
 
-type GameView = 'HUB' | 'BATTLE' | 'ROSTER' | 'INVENTORY';
+import { LoreArchiveUI } from './ui/lore-archive.ui.ts'
+
+type GameView = 'HUB' | 'BATTLE' | 'ROSTER' | 'INVENTORY' | 'LORE_ARCHIVE' | 'QUIZ';
 
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
@@ -80,20 +83,31 @@ class GameManager {
   private inventoryService: InventoryService;
   private battleEngine: BattleEngine | null = null;
   private battleTimer: number | null = null;
+  private isHandlingQuiz = false;
+
+  private lorePoints: number = 0;
+  private unlockedCharacters: string[] = [];
 
   constructor() {
     this.rosterService = new RosterService();
     this.inventoryService = new InventoryService();
+
+    this.lorePoints = parseInt(localStorage.getItem("lore_points") || "0");
+    this.unlockedCharacters = JSON.parse(localStorage.getItem("unlocked_chars") || "[]");
+
     (window as any).onCaptureRequested = () => this.handleCapture();
     (window as any).onItemMenuRequested = () => { this.currentView = 'INVENTORY'; this.render(); };
     (window as any).onShowStats = (charId: string) => this.handleShowStats(charId);
+    (window as any).onOpenArchive = () => { this.currentView = 'LORE_ARCHIVE'; this.render(); };
     this.init();
   }
 
   async init() {
     console.log("Multiverse Nexus Initializing...");
     await this.rosterService.initializeRoster([
-        "hp-harry-potter", "anime-goku", "disney-sora"
+      "scooby-doo",
+      "courage", 
+      "goku"
     ]);
     this.render();
   }
@@ -116,20 +130,31 @@ class GameManager {
     let lastPhase = '';
     this.battleTimer = window.setInterval(() => {
       if (this.battleEngine && this.currentView === 'BATTLE') {
-        this.battleEngine.tick(state => {
-          if (state.phase !== lastPhase) {
-            BattleUI.render(
-              state,
-              () => this.battleEngine?.playerAttack(),
-              (sid: string) => this.battleEngine?.playerSkill(sid),
-              () => { if (this.battleEngine) (window as any).onCaptureRequested?.(); },
-              () => { if (this.battleEngine) this.handleQuiz(); }
-            );
-            lastPhase = state.phase;
-          } else {
-            BattleUI.updateBars(state);
-          }
-        });
+        const state = this.battleEngine.getState();
+        if (state.phase === 'quiz') {
+            if (!this.isHandlingQuiz) {
+                this.isHandlingQuiz = true;
+                this.handleQuiz();
+            }
+            return;
+        }
+        
+        if (state.phase !== lastPhase) {
+          BattleUI.render(
+            state,
+            (move: any) => this.battleEngine?.executeMove(move).then(() => this.render()),
+            () => { this.currentView = 'INVENTORY'; this.render(); },
+            () => { 
+                if (this.battleTimer) clearInterval(this.battleTimer);
+                this.battleEngine = null;
+                this.currentView = 'HUB';
+                this.render();
+            }
+          );
+          lastPhase = state.phase;
+        } else {
+          BattleUI.updateBars(state);
+        }
       }
     }, 50);
   }
@@ -149,10 +174,14 @@ class GameManager {
         if (this.battleEngine) {
             BattleUI.render(
                 this.battleEngine.getState(),
-                () => { if (this.battleEngine) { this.battleEngine.playerAttack(); this.render(); } },
-                (id) => { if (this.battleEngine) { this.battleEngine.playerSkill(id); this.render(); } },
-                () => { if (this.battleEngine) (window as any).onCaptureRequested?.(); },
-                () => { if (this.battleEngine) this.handleQuiz(); }
+                (move) => { if (this.battleEngine) { this.battleEngine.executeMove(move); this.render(); } },
+                () => { this.currentView = 'INVENTORY'; this.render(); },
+                () => { 
+                    if (this.battleTimer) clearInterval(this.battleTimer);
+                    this.battleEngine = null;
+                    this.currentView = 'HUB';
+                    this.render();
+                }
             );
             
             const state = this.battleEngine.getState();
@@ -165,6 +194,8 @@ class GameManager {
                     this.currentView = 'HUB';
                     this.render();
                 }, 3000);
+            } else if (state.phase === 'quiz') {
+                this.handleQuiz();
             }
         }
         break;
@@ -174,6 +205,10 @@ class GameManager {
             this.rosterService.getActiveTrio(),
             (activeIdx, benchIdx) => {
                 this.rosterService.swapWithBench(activeIdx, benchIdx);
+                this.render();
+            },
+            (activeIdx) => {
+                this.rosterService.removeFromParty(activeIdx);
                 this.render();
             },
             () => { this.currentView = 'HUB'; this.render(); }
@@ -188,15 +223,12 @@ class GameManager {
             },
             (itemId) => {
                 const isInBattleTemp = !!this.battleEngine; 
-                
                 const targetIdx = isInBattleTemp ? this.battleEngine!.getState().activeTurnIndex : 0;
                 const target = this.rosterService.getActiveTrio()[targetIdx];
                 
                 if (target && this.inventoryService.useItem(itemId, target)) {
                     if (isInBattleTemp) {
                         this.battleEngine!.getState().log.push(`🎒 Usato oggetto su ${target.name}!`);
-                        // Cost a turn? The engine needs a way to skip or we just reset ATB
-                        (this.battleEngine as any).resetATB("p" + targetIdx); 
                         this.currentView = 'BATTLE';
                     }
                     this.render();
@@ -204,15 +236,45 @@ class GameManager {
             }
         );
         break;
+      case 'LORE_ARCHIVE':
+        LoreArchiveUI.render(
+            this.lorePoints,
+            this.unlockedCharacters,
+            () => { this.currentView = 'HUB'; this.render(); },
+            (charId, cost) => this.handleUnlock(charId, cost),
+            (points) => {
+                this.lorePoints += points;
+                localStorage.setItem("lore_points", this.lorePoints.toString());
+                this.render();
+            }
+        );
+        break;
+    }
+  }
+
+  async handleUnlock(charId: string, cost: number) {
+    if (this.lorePoints >= cost) {
+        this.lorePoints -= cost;
+        this.unlockedCharacters.push(charId);
+        localStorage.setItem("lore_points", this.lorePoints.toString());
+        localStorage.setItem("unlocked_chars", JSON.stringify(this.unlockedCharacters));
+        
+        await (this.rosterService as any).unlockCharacterById(charId);
+        this.render();
     }
   }
 
   async handleQuiz() {
     if (!this.battleEngine) return;
-    const enemy = this.battleEngine.getState().enemy;
-    const quiz = await QuizService.generateQuiz(enemy);
+    const state = this.battleEngine.getState();
+    if (state.phase !== 'quiz') { this.isHandlingQuiz = false; return; }
+    
+    const enemy = state.enemy;
+    const move = state.pendingMove;
+    const quiz = await QuizService.generateQuiz(enemy, move?.id);
     
     QuizUI.render(quiz, (isCorrect) => {
+        this.isHandlingQuiz = false;
         this.battleEngine!.setQuizResult(isCorrect);
         this.render();
     });
@@ -276,24 +338,64 @@ class GameManager {
   }
 
   handleShowStats(charId: string) {
-    let char;
+    let char: GameCharacter | null = null;
     if (this.battleEngine) {
         const state = this.battleEngine.getState();
         if (state.enemy.id === charId) char = state.enemy;
-        else char = state.party.find(p => p.id === charId);
+        else char = (state.party.find(p => p.id === charId) || null) as GameCharacter | null;
     }
     
     if (!char) {
         char = this.rosterService.getBench().find(p => p.id === charId) || 
-               this.rosterService.getActiveTrio().find(p => p?.id === charId);
+               (this.rosterService.getActiveTrio().find(p => p?.id === charId) || null) as GameCharacter | null;
     }
 
     if (char) {
-        StatsModalUI.render(char);
+        StatsModalUI.render(
+          char, 
+          this.rosterService.getActiveTrio(),
+          (slotIdx) => {
+            if (slotIdx === -1) {
+              const activeIdx = this.rosterService.getActiveTrio().findIndex(c => c?.id === charId);
+              if (activeIdx !== -1) {
+                this.rosterService.removeFromParty(activeIdx);
+                this.render();
+              }
+            } else {
+              // Equip logic
+              const benchIdx = this.rosterService.getBench().findIndex(c => c.id === charId);
+              if (benchIdx !== -1) {
+                this.rosterService.swapWithBench(slotIdx, benchIdx);
+                this.render();
+              } else {
+                // Already in party, maybe move to another slot?
+                const currentSlot = this.rosterService.getActiveTrio().findIndex(c => c?.id === charId);
+                // Simple move: for now just swap if already in party
+                if (currentSlot !== -1 && currentSlot !== slotIdx) {
+                   // Optional: implement intra-party swap if needed
+                }
+              }
+            }
+          }
+        );
     }
   }
 }
 
+function clearLegacyCache() {
+  const CURRENT_ROSTER_VERSION = "6"
+  const savedVersion = localStorage.getItem("mv_roster_version")
+  if (savedVersion !== CURRENT_ROSTER_VERSION) {
+    localStorage.removeItem("mv_character_cache_v3")
+    localStorage.removeItem("mv_character_cache_v2")
+    localStorage.removeItem("quiz_history")
+    localStorage.removeItem("multiverse_roster")  // Force full roster reset to remove ghost entries (e.g. duplicate Silente)
+    localStorage.setItem("mv_roster_version", CURRENT_ROSTER_VERSION)
+    console.log("Roster resettato alla v6: rimosse voci obsolete.")
+  }
+}
+
+clearLegacyCache()
 registerServiceWorker();
 setupInstallPrompt();
 new GameManager();

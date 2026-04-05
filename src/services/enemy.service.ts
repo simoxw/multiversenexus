@@ -1,49 +1,48 @@
 import type { Enemy, GameCharacter } from "../types/game.types.ts";
 import { characterPool } from "../data/characterPool.ts";
-import type { CharacterMetadata } from "../data/characterPool.ts";
 import { ApiService } from "../services/api.service.ts";
 
 export class EnemyService {
   /**
    * Generates an enemy based on the player's average party level.
-   * @param playerAverageLevel The average level of the player's active party.
-   * @param forceBoss Whether to force a boss encounter.
    */
   static async generateEnemy(playerAverageLevel: number, forceBoss: boolean = false): Promise<Enemy> {
-    // Filter pool for enemies or potential bosses
-    const enemyPool = characterPool.filter(c => c.isEnemy || (forceBoss && c.id.includes("boss")));
+    const enemyPool = characterPool.filter(c => c.isEnemy);
     
-    // Pick a random one or pick from API if pool is empty
-    let metadata: CharacterMetadata;
-    if (enemyPool.length > 0) {
-        metadata = enemyPool[Math.floor(Math.random() * enemyPool.length)];
-    } else {
-        // Fallback to a random character from the pool
+    let metadata = enemyPool[Math.floor(Math.random() * enemyPool.length)];
+    if (!metadata) {
         metadata = characterPool[Math.floor(Math.random() * characterPool.length)];
     }
 
     const baseCharacter = await ApiService.fetchCharacter(metadata);
     
-    // Scaling logic: Enemy level = player level + (0-20%)
-    const scalingFactor = 1 + (Math.random() * 0.2);
-    const scaledStats = this.scaleStats(baseCharacter.stats, playerAverageLevel * scalingFactor);
+    // Scaling logic: baseStat * (playerAverageLevel * 0.8 + 0.5)
+    const scale = playerAverageLevel * 0.8 + 0.5;
+    const scaledStats = this.scaleStats(baseCharacter.stats, scale);
+
+    // 20% bonus for iconic enemy characters
+    const iconicEnemies = ["voldemort", "sephiroth", "itachi"];
+    if (iconicEnemies.includes(metadata.id) || metadata.isEnemy) {
+        scaledStats.hp = Math.round(scaledStats.hp * 1.5); // Bosses are tougher
+        scaledStats.maxHp = Math.round(scaledStats.maxHp * 1.5);
+        scaledStats.atk = Math.round(scaledStats.atk * 1.25);
+    }
 
     return {
         ...baseCharacter,
         stats: scaledStats,
-        isBoss: forceBoss || metadata.isEnemy === true, // Determine boss status
+        isBoss: forceBoss || metadata.isEnemy === true,
     };
   }
 
-  private static scaleStats(stats: GameCharacter["stats"], targetLevel: number): GameCharacter["stats"] {
-    const factor = targetLevel / stats.loreLevel;
+  private static scaleStats(stats: GameCharacter["stats"], factor: number): GameCharacter["stats"] {
     return {
         hp: Math.round(stats.hp * factor),
         maxHp: Math.round(stats.maxHp * factor),
         atk: Math.round(stats.atk * factor),
         def: Math.round(stats.def * factor),
         spd: Math.round(stats.spd * factor),
-        loreLevel: Math.round(targetLevel),
+        loreLevel: Math.max(1, Math.round(factor)),
     };
   }
 }

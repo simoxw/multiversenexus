@@ -1,84 +1,40 @@
-import { getCharacterFallbackImage } from "../ui/image-fallback.ts";
-
 export const characterExtraData: Record<string, { imageUrl: string; description: string }> = {
-  "scooby-doo": {
-    imageUrl: "characters/scooby-doo.webp",
-    description: "Un Alano fifone ma adorabile, risolve misteri per Scooby Snacks."
-  },
-  "shaggy-rogers": {
-    imageUrl: "characters/shaggy-rogers.webp",
-    description: "Il migliore amico di Scooby, sempre affamato e pronto a scappare."
-  },
-  "velma-dinkley": {
-    imageUrl: "characters/velma-dinkley.webp",
-    description: "Il cervello della Mystery Inc., non vede nulla senza i suoi occhiali."
-  },
-  "fred-jones": {
-    imageUrl: "characters/fred-jones.webp",
-    description: "Leader del gruppo, esperto in trappole e amante del furgone."
-  },
-  "daphne-blake": {
-    imageUrl: "characters/daphne-blake.webp",
-    description: "Sempre alla moda, finisce spesso nei pasticci ma sa come liberarsi."
-  },
-  "courage": {
-    imageUrl: "characters/courage.webp",
-    description: "Un cane rosa che vive in mezzo al nulla e affronta terrori per Muriel."
-  },
-  "eustace": {
-    imageUrl: "characters/eustace.webp",
-    description: "Un contadino scorbutico che spaventa Leone con la sua maschera."
-  },
-  "muriel": {
-    imageUrl: getCharacterFallbackImage("muriel-bagge"),
-    description: "La gentile padrona di Leone, prepara thè e offre conforto."
-  },
-  "hermione-granger": {
-    imageUrl: getCharacterFallbackImage("hp-hermione-granger"),
-    description: "La strega più brillante della sua età, sempre pronta con l'incantesimo giusto."
-  },
-  "severus-snape": {
-    imageUrl: getCharacterFallbackImage("hp-severus-snape"),
-    description: "Maestro di Pozioni e Principe Mezzosangue. Le sue intenzioni sono sempre un mistero."
-  },
-  "voldemort": {
-    imageUrl: "characters/voldemort.webp",
-    description: "Colui che non deve essere nominato. Il mago oscuro più potente di tutti i tempi."
-  },
-  "naruto": {
-    imageUrl: "characters/naruto.webp",
-    description: "Ninja della Foglia che sogna di diventare Hokage. Credici!"
-  },
-  "luffy": {
-    imageUrl: "characters/luffy.webp",
-    description: "Capitano dei Pirati di Cappello di Paglia, vuole diventare il Re dei Pirati."
-  },
-  "bellatrix": {
-    imageUrl: "characters/bellatrix.webp",
-    description: "La seguace più fedele di Voldemort, nota per la sua crudeltà e abilità nei duelli."
-  },
-  "draco-malfoy": {
-    imageUrl: "characters/draco-malfoy.webp",
-    description: "Il rivale di Harry a Hogwarts, tormentato tra il dovere familiare e la propria coscienza."
-  },
-  "sirius-black": {
-    imageUrl: getCharacterFallbackImage("hp-sirius-black"),
-    description: "Il prigioniero di Azkaban e padrino di Harry. Un Animagus leale fino alla fine."
-  },
-  "albus-dumbledore": {
-    imageUrl: "characters/albus-dumbledore.webp",
-    description: "Preside di Hogwarts e uno dei maghi più saggi e potenti della storia."
-  },
-  "harry-potter": {
-    imageUrl: getCharacterFallbackImage("hp-harry-potter"),
-    description: "Il ragazzo che è sopravvissuto, l'eroe di Hogwarts."
-  },
-  "cloud": {
-    imageUrl: getCharacterFallbackImage("ff7-cloud"),
-    description: "Ex-SOLDIER con la Buster Sword, combatte per il destino del pianeta."
-  },
-  "sephiroth": {
-    imageUrl: "characters/sephiroth.webp",
-    description: "L'Angelo con un'ala sola, un tempo eroe dei SOLDIER, ora minaccia planetaria."
-  }
-};
+  "scooby-doo":       { imageUrl:"/characters/scooby-doo.webp",      description:"Un Alano fifone ma adorabile, risolve misteri per Scooby Snacks." },
+  "courage":          { imageUrl:"/characters/courage.webp",          description:"Un cane rosa che vive in mezzo al nulla e affronta terrori per amore di Muriel." },
+  "shaggy-rogers":    { imageUrl:"/characters/shaggy-rogers.webp",    description:"Il migliore amico di Scooby, sempre affamato e pronto a scappare dai fantasmi." },
+  "velma-dinkley":    { imageUrl:"/characters/velma-dinkley.webp",    description:"Il cervello della Mystery Inc., non vede nulla senza i suoi occhiali." },
+  "fred-jones":       { imageUrl:"/characters/fred-jones.webp",       description:"Leader della Mystery Inc., esperto in trappole elaborate." },
+  "daphne-blake":     { imageUrl:"/characters/daphne-blake.webp",     description:"Sempre alla moda, finisce spesso nei guai ma sa come liberarsi." },
+  "harry-potter":     { imageUrl:"/characters/harry-potter.webp",      description:"Il ragazzo che è sopravvissuto, l'eroe di Hogwarts." },
+  "hermione-granger": { imageUrl:"/characters/hermione.webp",          description:"La strega più brillante della sua età, sempre pronta con l'incantesimo giusto." },
+  "albus-dumbledore": { imageUrl:"/characters/albus-dumbledore.webp", description:"Preside di Hogwarts e uno dei maghi più saggi e potenti della storia." },
+  "luna-lovegood":    { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=luna-lovegood",    description:"Eccentrica e saggia, vede il mondo in modo completamente unico." },
+  "draco-malfoy":     { imageUrl:"/characters/draco-malfoy.webp",     description:"Il rivale di Harry, tormentato tra dovere familiare e propria coscienza." },
+  "sirius-black":     { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=sirius-black",     description:"Il padrino di Harry, Animagus leale fino alla fine." },
+  "hagrid":           { imageUrl:"/characters/hagrid.webp",           description:"Il guardiano delle chiavi di Hogwarts, cuore d'oro e passione per le creature magiche." },
+  "voldemort":        { imageUrl:"/characters/voldemort.webp",        description:"Colui che non deve essere nominato. Il mago oscuro più potente di tutti i tempi." },
+  "goku":             { imageUrl:"/characters/goku.webp",             description:"Il più grande guerriero Saiyan, sempre alla ricerca di avversari più forti." },
+  "vegeta":           { imageUrl:"/characters/vegeta.webp",           description:"Il Principe orgoglioso dei Saiyan, rivale e alleato di Goku." },
+  "gohan":            { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=son-gohan",            description:"Il figlio di Goku, nasconde un potenziale immenso che si libera quando chi ama è in pericolo." },
+  "piccolo":          { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=junior-piccolo",       description:"Il guerriero Namecciano, mentore di Gohan e alleato insostituibile." },
+  "naruto":           { imageUrl:"/characters/naruto.webp",           description:"Il ninja Jinchūriki che sogna di diventare Hokage. Credici!" },
+  "sasuke":           { imageUrl:"/characters/sasuke.webp",           description:"L'ultimo degli Uchiha, percorre il confine tra luce e oscurità." },
+  "kakashi":          { imageUrl:"/characters/kakashi.webp",          description:"Il ninja che ha copiato oltre mille jutsu grazie al suo Sharingan." },
+  "luffy":            { imageUrl:"/characters/luffy.webp",            description:"Il capitano di gomma dei Pirati di Cappello di Paglia, vuole diventare Re dei Pirati." },
+  "zoro":             { imageUrl:"/characters/zoro.webp",             description:"Il maestro della Santoryu, mira a diventare il più grande spadaccino del mondo." },
+  "itachi":           { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=itachi",           description:"Il ninja maledetto dal destino, portava un peso che nessuno capiva." },
+  "sora":             { imageUrl:"/characters/sora.webp",             description:"Il portatore della Keyblade che trova forza nei suoi amici." },
+  "riku":             { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=riku",             description:"Il migliore amico di Sora, cammina nel confine tra luce e oscurità." },
+  "aqua":             { imageUrl:"/characters/aqua.webp",             description:"Un Master della Keyblade, rimasta intrappolata nel Realm of Darkness per proteggere gli amici." },
+  "mickey":           { imageUrl:"/characters/mickey.webp",           description:"Il Re del castello Disney, usa la Keyblade per difendere la luce." },
+  "axel":             { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=axel",             description:"Il Nobody del fuoco, ricerca le emozioni perdute. Got it memorized?" },
+  "elsa":             { imageUrl:"/characters/elsa.webp",             description:"La regina dei ghiacci di Arendelle, impara a controllare i suoi poteri." },
+  "donald":           { imageUrl:"/characters/donald.webp",           description:"Il mago irascibile della Disney, compagno inseparabile di Sora." },
+  "ventus":           { imageUrl:"/characters/ventus.webp",           description:"Il giovane portatore di Keyblade dal cuore puro, legato a Sora da un filo invisibile." },
+  "simba":            { imageUrl:"/characters/simba.webp",            description:"Il re leone che ha ritrovato il suo posto nella cerchia della vita." },
+  "cloud":            { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=cloud",            description:"Ex-SOLDIER con la Buster Sword, combatte per il destino del pianeta." },
+  "aerith":           { imageUrl:"/characters/aerith.webp",           description:"L'ultima dei Cetra, in comunicazione con il Pianeta e chi non c'è più." },
+  "squall":           { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=squall",           description:"Il comandante solitario degli SeeD, nasconde i sentimenti dietro un'armatura di silenzio." },
+  "vivi":             { imageUrl:"https://api.dicebear.com/9.x/adventurer/svg?seed=vivi",             description:"Il piccolo Black Mage di FF9, cerca il significato della propria esistenza." },
+  "sephiroth":        { imageUrl:"/characters/sephiroth.webp",        description:"L'Angelo con un'ala sola, un tempo eroe dei SOLDIER, ora minaccia planetaria." },
+}

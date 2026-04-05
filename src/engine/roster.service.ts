@@ -6,7 +6,7 @@ import charactersData from "../data/characters.json";
 import { getCharacterFallbackImage } from "../ui/image-fallback.ts";
 
 export class RosterService {
-  private static readonly STORAGE_VERSION = 2;
+  private static readonly STORAGE_VERSION = 6;
   private activeTrio: (GameCharacter | null)[] = [null, null, null];
   private bench: GameCharacter[] = [];
 
@@ -25,12 +25,12 @@ export class RosterService {
         this.activeTrio = (data.activeTrio || [null, null, null]) as (GameCharacter | null)[];
         this.bench = (data.bench || []) as GameCharacter[];
         this.migrateImages();
+        this.syncWithMetadata();
         if (savedVersion < RosterService.STORAGE_VERSION) this.saveToStorage();
     }
   }
 
   private migrateImages() {
-    // Migration mapping for old IDs to new IDs
     const idMigration: Record<string, string> = {
         "disney-sora": "sora", "disney-riku": "riku", "disney-kairi": "kairi",
         "disney-mickey": "mickey", "disney-donald": "donald", "disney-goofy": "goofy",
@@ -54,22 +54,44 @@ export class RosterService {
         "eustace-bagge": "eustace", "muriel-bagge": "muriel", "the-director": "director"
     };
 
+    // characters.json is the single source of truth for images
+    const allChars = [...charactersData.Mysterians, ...charactersData.Ethereals, ...charactersData.Strikers];
+
     const fix = (char: GameCharacter) => {
         if (!char) return;
-        // Migrate ID if necessary
         if (idMigration[char.id]) char.id = idMigration[char.id];
 
-        const allChars = [...charactersData.Mysterians, ...charactersData.Ethereals, ...charactersData.Strikers];
+        // Always use the image from characters.json if available
         const imageData = allChars.find(c => c.id === char.id);
-        const reliableFallback = imageData?.img || characterExtraData[char.id]?.imageUrl || getCharacterFallbackImage(char.id || char.name);
-        
-        // FORCE update for relative paths and local assets
-        if (reliableFallback && (reliableFallback.startsWith("characters/") || !char.imageUrl || char.imageUrl.includes("pngarts.com") || char.imageUrl.includes("pngitem.com"))) {
-            char.imageUrl = reliableFallback;
+        if (imageData?.img) {
+            char.imageUrl = imageData.img;
+        } else {
+            // Fallback to characterExtraData or dicebear
+            const fallback = characterExtraData[char.id]?.imageUrl || getCharacterFallbackImage(char.id || char.name);
+            if (fallback) char.imageUrl = fallback;
         }
     };
     this.activeTrio.forEach(c => c && fix(c));
     this.bench.forEach(c => fix(c));
+  }
+
+  private syncWithMetadata() {
+    // Remove any characters whose id is no longer in the master pool (prevents ghost duplicates)
+    const validIds = new Set(characterPool.map(m => m.id));
+    this.bench = this.bench.filter(c => validIds.has(c.id));
+    this.activeTrio = this.activeTrio.map(c => (c && validIds.has(c.id)) ? c : null) as any;
+
+    const syncChar = (char: GameCharacter) => {
+      const meta = characterPool.find(m => m.id === char.id);
+      if (meta) {
+        char.name = meta.name;
+        char.franchise = meta.franchise;
+        char.characterClass = meta.characterClass;
+      }
+    };
+    this.activeTrio.forEach(c => c && syncChar(c));
+    this.bench.forEach(c => syncChar(c));
+    this.saveToStorage();
   }
 
   private saveToStorage() {
@@ -81,8 +103,9 @@ export class RosterService {
   }
 
   async initializeRoster(initialCharacterIds: string[]) {
-    // Only initialize if the roster is empty (not loaded from storage)
+    // Only initialize fully if the roster is completely empty
     if (this.isRosterEmpty() && this.bench.length === 0) {
+        // Populate activeTrio
         for (let i = 0; i < Math.min(initialCharacterIds.length, 3); i++) {
             const metadata = characterPool.find(c => c.id === initialCharacterIds[i]);
             if (metadata) {
@@ -90,17 +113,41 @@ export class RosterService {
                 this.activeTrio[i] = character;
             }
         }
-        this.saveToStorage(); // Save after initial population
+
+        // Fill the bench with the rest of the pool — no duplicates
+        const existingIds = new Set([
+            ...this.activeTrio.filter(Boolean).map(c => c!.id),
+            ...this.bench.map(c => c.id)
+        ]);
+        const benchCandidates = characterPool.filter(c => !existingIds.has(c.id));
+        for (const metadata of benchCandidates) {
+            if (this.bench.length >= 57) break;
+            if (this.bench.some(b => b.id === metadata.id)) continue;
+            const character = await ApiService.fetchCharacter(metadata);
+            this.bench.push(character);
+        }
     }
-    
-    // Fill the bench with the rest of the pool
-    const benchCandidates = characterPool.filter(c => !initialCharacterIds.includes(c.id));
-    for (const metadata of benchCandidates) {
-        if (this.bench.length >= 57) break; // Max 60 total (3 active + 57 bench)
-        const character = await ApiService.fetchCharacter(metadata);
-        this.bench.push(character);
-    }
+
+    // Always apply local images immediately (regardless of whether we just built or loaded from storage)
+    this.applyLocalImages();
     this.saveToStorage();
+  }
+
+  /** Forces all characters in memory to use their local image from characters.json */
+  applyLocalImages() {
+    const allChars = [...charactersData.Mysterians, ...charactersData.Ethereals, ...charactersData.Strikers];
+    const apply = (char: GameCharacter) => {
+        if (!char) return;
+        const imageData = allChars.find(c => c.id === char.id);
+        if (imageData?.img) {
+            char.imageUrl = imageData.img;
+        } else {
+            // Consistent dicebear avatar based on ID seed — no external API calls
+            char.imageUrl = `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(char.id)}`;
+        }
+    };
+    this.activeTrio.forEach(c => c && apply(c));
+    this.bench.forEach(c => apply(c));
   }
 
   getActiveTrio(): (GameCharacter | null)[] {
@@ -130,9 +177,20 @@ export class RosterService {
     this.activeTrio[activeSlotIndex] = this.bench[benchIndex];
     
     if (temp) {
-        this.bench[benchIndex] = temp;
+      this.bench[benchIndex] = temp;
     } else {
-        this.bench.splice(benchIndex, 1);
+      this.bench.splice(benchIndex, 1);
+    }
+    this.saveToStorage();
+  }
+
+  removeFromParty(activeSlotIndex: number) {
+    if (activeSlotIndex < 0 || activeSlotIndex >= 3) return;
+    const char = this.activeTrio[activeSlotIndex];
+    if (char) {
+      this.bench.push(char);
+      this.activeTrio[activeSlotIndex] = null;
+      this.saveToStorage();
     }
   }
 
@@ -151,6 +209,14 @@ export class RosterService {
         if (sortBy === "atk") return b.stats.atk - a.stats.atk;
         return 0;
     });
+  }
+
+  async unlockCharacterById(id: string) {
+    const metadata = characterPool.find(c => c.id === id);
+    if (metadata) {
+        const character = await ApiService.fetchCharacter(metadata);
+        this.addToRoster(character);
+    }
   }
 
   addToRoster(character: GameCharacter) {

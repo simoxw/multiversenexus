@@ -1,118 +1,94 @@
-import type { GameCharacter, CharacterStats, Resource } from "../types/game.types.ts";
+import type { GameCharacter, Resource } from "../types/game.types.ts";
 import type { CharacterMetadata } from "../data/characterPool.ts";
-import { characterExtraData } from "../data/characterExtra.ts";
-import { getCharacterFallbackImage } from "../ui/image-fallback.ts";
 import charactersData from "../data/characters.json";
+import { characterStats } from "../data/characterStats.ts";
 
 export class ApiService {
   private static JIKAN_BASE = "https://api.jikan.moe/v4";
   private static HP_API_BASE = "https://hp-api.onrender.com/api";
   private static DISNEY_API_BASE = "https://api.disneyapi.dev/character";
-  private static readonly CACHE_KEY = "mv_character_cache_v2";
+  private static readonly CACHE_KEY = "mv_character_cache_v5"; // bumped to v5 to invalidate old external URL caches
   private static readonly CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 3; // 3 days
 
   static async fetchCharacter(metadata: CharacterMetadata): Promise<GameCharacter> {
     try {
-      // Check local JSON first (Simplified IDs)
       const allChars = [...charactersData.Mysterians, ...charactersData.Ethereals, ...charactersData.Strikers];
       const localData = allChars.find(c => c.id === metadata.id);
+
+      // Image: ALWAYS use local file from characters.json, or dicebear fallback. Never an external API image.
+      const imageUrl = localData?.img || `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(metadata.id)}`;
       
       const cached = this.getCachedCharacter(metadata.id);
       if (cached) {
-        // Force update image path if it's local
-        if (localData?.img && localData.img.startsWith("characters/") && cached.imageUrl !== localData.img) {
-          cached.imageUrl = localData.img;
-          this.setCachedCharacter(cached);
-        }
+        // Always override image with the local one (in case cache has old API URLs)
+        cached.imageUrl = imageUrl;
         return cached;
       }
 
-      let data: any;
-      let imageUrl = "";
       let name = metadata.name;
-
-      // use localData from above
-      if (localData?.img && localData.img.startsWith("/characters/")) {
-        imageUrl = localData.img;
-      } else if (characterExtraData[metadata.id]) {
-        imageUrl = characterExtraData[metadata.id].imageUrl;
-      }
+      let apiData: any;
 
       switch (metadata.apiSource) {
         case "jikan":
-          data = await this.fetchJikan(metadata.sourceId, metadata.name);
-          imageUrl = data?.images?.jpg?.large_image_url || imageUrl;
-          name = data?.name_kanji ? `${data.name} (${data.name_kanji})` : (data?.name || name);
+          apiData = await this.fetchJikan(metadata.sourceId, metadata.name);
+          name = this.cleanName(apiData?.name || name);
           break;
         case "hp-api":
-          data = await this.fetchHPApi(metadata.sourceId, metadata.name);
-          imageUrl = data?.image || imageUrl;
-          name = data?.name || name;
+          apiData = await this.fetchHPApi(metadata.sourceId, metadata.name);
+          name = apiData?.name || name;
           break;
         case "disney":
-          data = await this.fetchDisneyApi(metadata.sourceId);
-          imageUrl = data?.imageUrl || imageUrl;
-          name = data?.name || name;
+          apiData = await this.fetchDisneyApi(metadata.sourceId);
+          name = apiData?.name || name;
           break;
-        case "ffapi":
-          // Special fallback for FF characters using name or hardcoded data
-          if (!imageUrl) imageUrl = `https://placehold.co/400x400/16162d/ef4444?text=${encodeURIComponent(metadata.name)}`;
-          break;
-        case "custom":
         default:
-          if (!imageUrl) imageUrl = `https://placehold.co/400x400/16162d/a855f7?text=${encodeURIComponent(metadata.name)}`;
           break;
-      }
-      if (!imageUrl) {
-        imageUrl = `https://placehold.co/400x400/16162d/a855f7?text=${encodeURIComponent(metadata.name)}`;
       }
 
-      const character = {
+      const character: GameCharacter = {
         id: metadata.id,
         name: name,
-        imageUrl: imageUrl,
+        imageUrl: imageUrl,  // Always local
         franchise: metadata.franchise,
         characterClass: metadata.characterClass,
+        role: characterStats[metadata.id]?.role ?? "balanced",
         stats: this.generateStats(metadata),
-        resource: this.generateResource(metadata),
+        resource: {
+          type: this.determineResourceType(metadata),
+          current: characterStats[metadata.id]?.mp || 100,
+          max: characterStats[metadata.id]?.mp || 100,
+        },
         isAlive: true,
+        activeEffects: [],
       };
+
       this.setCachedCharacter(character);
       return character;
     } catch (error) {
       console.error(`Error fetching character ${metadata.name}:`, error);
-      const fallback = this.fallbackCharacter(metadata);
-      this.setCachedCharacter(fallback);
-      return fallback;
+      return this.fallbackCharacter(metadata);
     }
   }
 
   private static async fetchJikan(id: string, characterName: string) {
     const response = await fetch(`${this.JIKAN_BASE}/characters/${id}`);
     const json = await response.json();
-    if (response.ok && json?.data) {
-      return json.data;
-    }
+    if (response.ok && json?.data) return json.data;
 
-    // Fallback: search by character name when static IDs become stale.
     const searchResponse = await fetch(`${this.JIKAN_BASE}/characters?q=${encodeURIComponent(characterName)}&limit=1`);
     const searchJson = await searchResponse.json();
     const candidate = searchJson?.data?.[0];
-    if (searchResponse.ok && candidate) {
-      return candidate;
-    }
+    if (searchResponse.ok && candidate) return candidate;
 
     throw new Error(`Jikan data not found for id: ${id}, name: ${characterName}`);
   }
 
   private static async fetchHPApi(id: string, characterName: string) {
-    // Primary endpoint (historical format)
     const characterResponse = await fetch(`${this.HP_API_BASE}/character/${id}`);
     const characterJson = await characterResponse.json();
     if (Array.isArray(characterJson) && characterJson[0]) return characterJson[0];
     if (characterJson && typeof characterJson === "object" && !Array.isArray(characterJson)) return characterJson;
 
-    // Fallback endpoint: full list, then match by id.
     const listResponse = await fetch(`${this.HP_API_BASE}/characters`);
     const listJson = await listResponse.json();
     if (Array.isArray(listJson)) {
@@ -126,8 +102,6 @@ export class ApiService {
   }
 
   private static async fetchDisneyApi(id: string) {
-    // Note: Disney API might need search or specific ID. 
-    // This is a simplified version.
     const response = await fetch(`${this.DISNEY_API_BASE}?name=${encodeURIComponent(id)}`);
     const json = await response.json();
     const data = json?.data;
@@ -135,42 +109,55 @@ export class ApiService {
     return data || null;
   }
 
-  private static generateStats(_metadata: CharacterMetadata): CharacterStats {
-    // Base stats generation logic
-    const base = 100;
-    return {
-      hp: base * 10,
-      maxHp: base * 10,
-      atk: base,
-      def: base,
-      spd: base,
-      loreLevel: 1,
-    };
+  private static determineResourceType(metadata: CharacterMetadata): Resource["type"] {
+    if (metadata.characterClass === "Striker" && metadata.franchise === "anime") return "Ki";
+    if (metadata.franchise === "scooby") return "Courage";
+    return "MP";
   }
 
-  private static generateResource(metadata: CharacterMetadata): Resource {
-    let type: Resource["type"] = "MP";
-    if (metadata.characterClass === "Striker" && metadata.franchise === "anime") type = "Ki";
-    if (metadata.franchise === "scooby") type = "Courage";
+  private static generateStats(metadata: CharacterMetadata): any {
+    const base = characterStats[metadata.id]
+    if (base) {
+      return {
+        hp: base.hp,
+        maxHp: base.hp,
+        atk: base.atk,
+        def: base.def,
+        spd: base.spd,
+        loreLevel: 1
+      }
+    }
+    return { hp:900, maxHp:900, atk:100, def:100, spd:100, loreLevel:1 }
+  }
 
-    return {
-      type,
-      current: 100,
-      max: 100,
-    };
+  private static cleanName(name: string): string {
+    // Remove Kanji, Hiragana, Katakana or any CJK characters usually found in parentheses
+    // This covers (斎藤 一), (ピッコロ), etc.
+    return name
+      .replace(/\s*\([\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]+\)/g, "")
+      .replace(/\s*\[[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]+\]/g, "")
+      .trim();
   }
 
   private static fallbackCharacter(metadata: CharacterMetadata): GameCharacter {
-    const fallbackImage = characterExtraData[metadata.id]?.imageUrl || getCharacterFallbackImage(metadata.id || metadata.name);
+    const allChars = [...charactersData.Mysterians, ...charactersData.Ethereals, ...charactersData.Strikers];
+    const localData = allChars.find(c => c.id === metadata.id);
+    const imageUrl = localData?.img || `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(metadata.id)}`;
     return {
       id: metadata.id,
       name: metadata.name,
-      imageUrl: fallbackImage,
+      imageUrl: imageUrl,
       franchise: metadata.franchise,
       characterClass: metadata.characterClass,
+      role: characterStats[metadata.id]?.role ?? "balanced",
       stats: this.generateStats(metadata),
-      resource: this.generateResource(metadata),
+      resource: {
+        type: this.determineResourceType(metadata),
+        current: characterStats[metadata.id]?.mp || 100,
+        max: characterStats[metadata.id]?.mp || 100,
+      },
       isAlive: true,
+      activeEffects: [],
     };
   }
 

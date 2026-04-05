@@ -38,23 +38,25 @@ export class HubUI {
         </section>
 
         <nav style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-          <button id="btn-start-battle" style="grid-column: span 2; padding: 1.2rem; font-size: 1.1rem; background: linear-gradient(135deg, #7c3aed, #4f46e5); box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);">🚀 ESPLORA CLUSTER</button>
-          <button id="btn-open-roster" style="background: #1e293b; border: 1px solid #334155; padding: 1rem;">🗃️ SQUADRA</button>
-          <button id="btn-open-inventory" style="background: #1e293b; border: 1px solid #334155; padding: 1rem;">🎒 ZAINO</button>
-          <button disabled style="grid-column: span 2; background: #0f172a; border: 1px solid #1e293b; color: #475569; padding: 0.75rem;">💠 DATABASE (🔒 PROSSIMAMENTE)</button>
+          <button id="btn-start-battle" style="grid-column: span 2; padding: 1.2rem; font-size: 1.1rem; background: linear-gradient(135deg, #7c3aed, #4f46e5); box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); border-radius: 12px; font-weight: bold; cursor: pointer; border: none; color: white;">🚀 ESPLORA CLUSTER</button>
+          <button id="btn-open-roster" style="background: #1e293b; border: 1px solid #334155; padding: 1rem; border-radius: 10px; color: #e2e8f0; cursor: pointer; transition: background 0.2s;">🗃️ SQUADRA</button>
+          <button id="btn-open-inventory" style="background: #1e293b; border: 1px solid #334155; padding: 1rem; border-radius: 10px; color: #e2e8f0; cursor: pointer; transition: background 0.2s;">🎒 ZAINO</button>
+          <button id="btn-open-archive" style="grid-column: span 2; background: linear-gradient(90deg, #1e293b, #312e81); border: 1px solid #4338ca; color: #e0e7ff; padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: transform 0.2s;">📚 ARCHIVIO LORE</button>
         </nav>
       </div>
     `;
 
     document.getElementById("btn-start-battle")?.addEventListener("click", onStartBattle);
+    document.getElementById("btn-open-roster")?.addEventListener("click", onOpenRoster);
+    document.getElementById("btn-open-inventory")?.addEventListener("click", onOpenInventory);
+    document.getElementById("btn-open-archive")?.addEventListener("click", () => (window as any).onOpenArchive?.());
+    
     root.querySelectorAll(".hex-portrait").forEach((hex, i) => {
         hex.addEventListener("click", () => {
              const char = party[i];
              if (char) (window as any).onShowStats?.(char.id);
         });
     });
-    document.getElementById("btn-open-roster")?.addEventListener("click", onOpenRoster);
-    document.getElementById("btn-open-inventory")?.addEventListener("click", onOpenInventory);
     bindImageFallbacks(root);
   }
 }

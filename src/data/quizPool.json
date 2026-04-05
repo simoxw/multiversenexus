@@ -7,46 +7,118 @@
         { "question": "Qual è la razza di Scooby-Doo?", "options": ["Alano", "Mastino", "Dalmata", "Bulldog"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "scooby" },
         { "question": "Chi è il nipote di Scooby-Doo?", "options": ["Scrappy-Doo", "Duffy-Doo", "Scooby-Dum", "Snappy-Doo"], "correctIndex": 0, "difficulty": "medium", "source": "local", "franchise": "scooby" },
         { "question": "Di che colore è il collare di Scooby?", "options": ["Rosso", "Blu", "Verde", "Turchese"], "correctIndex": 3, "difficulty": "easy", "source": "local", "franchise": "scooby" },
-        { "question": "Come si chiama il furgone della banda?", "options": ["Mystery Machine", "Ghost Bus", "Scooby Van", "Horror Bus"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "scooby" }
+        { "question": "Come si chiama il furgone della banda di Scooby?", "options": ["Mystery Machine", "Ghost Bus", "Scooby Van", "Horror Bus"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Qual è la frase iconica di Scooby-Doo?", "options": ["Scooby-Dooby-Doo!", "Ruh-Roh!", "Yabba-Dabba-Doo!", "Zoinks!"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Chi dice sempre 'Zoinks!' nel gruppo di Scooby?", "options": ["Fred", "Daphne", "Velma", "Shaggy"], "correctIndex": 3, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Qual è il soprannome del gruppo di Scooby-Doo?", "options": ["Mystery Inc.", "Ghost Hunters", "Scooby Squad", "Fright Club"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Cosa perde sempre Velma durante le fughe?", "options": ["La sciarpa", "Gli occhiali", "Il libro", "La torcia"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Quanti sono i membri della Mystery Inc.?", "options": ["3", "4", "5", "6"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Come si chiama per intero Shaggy Rogers?", "options": ["Norman Rogers", "Norville Rogers", "Nathan Rogers", "Nicholas Rogers"], "correctIndex": 1, "difficulty": "hard", "source": "local", "franchise": "scooby" },
+        { "question": "In quale città vive il gruppo di Scooby-Doo?", "options": ["Crystal Cove", "Coolsville", "Cartoon City", "Spooky Town"], "correctIndex": 1, "difficulty": "medium", "source": "local", "franchise": "scooby" },
+        { "question": "Qual è la specialità di Fred Jones nel gruppo?", "options": ["Cucinare", "Costruire trappole", "Leggere mappe", "Guidare"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Di che colore sono i capelli di Daphne Blake?", "options": ["Biondi", "Neri", "Rossi", "Castani"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Come finisce di solito un episodio di Scooby-Doo?", "options": ["Il fantasma scappa", "La banda si arrende", "Il mostro viene smascherato", "Scooby mangia tutto"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "scooby" }
       ]
     },
     {
-      "characterId": "hp-harry-potter",
+      "characterId": "courage",
+      "questions": [
+        { "question": "Come si chiama la padrona di Leone il Cane Fifone?", "options": ["Violet", "Muriel", "Edna", "Marge"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Come si chiama il marito burbero di Muriel?", "options": ["Eustace", "Edgar", "Eugene", "Ernest"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "In quale posto sperduto vive Leone il Cane Fifone?", "options": ["Nel mezzo del Kansas", "Nel mezzo del nulla", "In riva al mare", "In una città fantasma"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Di che colore è Leone il Cane Fifone?", "options": ["Giallo", "Arancione", "Rosa", "Beige"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Come si chiama in originale la serie di Leone il Cane Fifone?", "options": ["Courage the Cowardly Dog", "Brave Little Dog", "Scaredy Dog", "Frightened Hound"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Cosa usa spesso Leone per comunicare i pericoli?", "options": ["Un megafono", "Un computer magico", "Segnali di fumo", "Disegni"], "correctIndex": 1, "difficulty": "medium", "source": "local", "franchise": "scooby" },
+        { "question": "Quale personaggio ritorna spesso come antagonista di Leone?", "options": ["Il Dottor Katz", "Fred Fredburger", "Katz", "Il Muratore"], "correctIndex": 2, "difficulty": "medium", "source": "local", "franchise": "scooby" },
+        { "question": "Nonostante la paura, Leone protegge sempre chi?", "options": ["Il marito burbero", "Muriel e Eustace", "Solo Muriel", "Il suo osso"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Qual è la caratteristica principale di Eustace con Leone?", "options": ["Lo coccola sempre", "Lo tratta male e lo spaventa", "Lo porta a passeggio ogni giorno", "Lo nutre con carne speciale"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "In quale rete è andata in onda la serie Leone il Cane Fifone?", "options": ["Nickelodeon", "Cartoon Network", "Disney Channel", "Fox Kids"], "correctIndex": 1, "difficulty": "medium", "source": "local", "franchise": "scooby" }
+      ]
+    },
+    {
+      "characterId": "harry-potter",
       "questions": [
         { "question": "In quale casa viene smistato Harry?", "options": ["Serpeverde", "Grifondoro", "Tassorosso", "Corvonero"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "harry_potter" },
         { "question": "Qual è la forma del Patronus di Harry?", "options": ["Cervo", "Lupo", "Gatto", "Lontra"], "correctIndex": 0, "difficulty": "medium", "source": "local", "franchise": "harry_potter" },
         { "question": "Chi è il padrino di Harry Potter?", "options": ["Severus Piton", "Sirius Black", "Remus Lupin", "Albus Silente"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "harry_potter" },
         { "question": "Qual è il nucleo della bacchetta di Harry?", "options": ["Unicorno", "Drago", "Fenice", "Vane"], "correctIndex": 2, "difficulty": "hard", "source": "local", "franchise": "harry_potter" },
-        { "question": "Come si chiama l'elfo amico di Harry?", "options": ["Kreacher", "Dobby", "Winky", "Hokey"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "harry_potter" }
+        { "question": "Come si chiama l'elfo amico di Harry?", "options": ["Kreacher", "Dobby", "Winky", "Hokey"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "harry_potter" },
+        { "question": "Qual è l'incantesimo di disarmo usato da Harry?", "options": ["Expelliarmus", "Stupefy", "Wingardium Leviosa", "Avada Kedavra"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "harry_potter" },
+        { "question": "Da quanti libri è composta la saga di Harry Potter?", "options": ["5", "6", "7", "8"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "harry_potter" }
       ]
     },
     {
-      "characterId": "anime-goku",
+      "characterId": "goku",
       "questions": [
         { "question": "Qual è il vero nome Saiyan di Goku?", "options": ["Kakarot", "Bardock", "Raditz", "Broly"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "anime" },
         { "question": "Chi ha insegnato la Kamehameha a Goku?", "options": ["Dio", "Re Kaioh", "Maestro Muten", "Nonno Gohan"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "anime" },
-        { "question": "Quale trasformazione raggiunge Goku contro Freezer?", "options": ["Super Saiyan", "Super Saiyan 2", "Super Saiyan 3", "God"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Quale trasformazione raggiunge Goku contro Freezer?", "options": ["Super Saiyan", "Super Saiyan 2", "Super Saiyan 3", "Super Saiyan God"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "anime" },
         { "question": "Come si chiama il figlio maggiore di Goku?", "options": ["Goten", "Gohan", "Trunks", "Pan"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "anime" },
-        { "question": "Chi è l'eterno rivale di Goku?", "options": ["Piccolo", "Frieza", "Vegeta", "Cell"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "anime" }
+        { "question": "Chi è l'eterno rivale di Goku?", "options": ["Piccolo", "Frieza", "Vegeta", "Cell"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Qual è la tecnica di fusione di Goku e Vegeta?", "options": ["Potara", "Kamehameha doppia", "Fusion Dance", "Spiraling Aura"], "correctIndex": 2, "difficulty": "medium", "source": "local", "franchise": "anime" }
       ]
     }
   ],
   "franchises": [
     {
+      "franchise": "scooby",
+      "questions": [
+        { "question": "Quale frase dice Fred quando smascherano il mostro?", "options": ["Era il custode!", "L'avrei preso anch'io!", "E l'avremmo fatto franca...", "Smettila Scooby!"], "correctIndex": 0, "difficulty": "medium", "source": "local", "franchise": "scooby" },
+        { "question": "In quale anno debuttò Scooby-Doo in TV?", "options": ["1965", "1969", "1972", "1975"], "correctIndex": 1, "difficulty": "hard", "source": "local", "franchise": "scooby" },
+        { "question": "Come si chiama lo show originale di Scooby-Doo?", "options": ["Scooby-Doo, Where Are You!", "The Scooby Show", "Mystery Squad", "Scooby and Friends"], "correctIndex": 0, "difficulty": "medium", "source": "local", "franchise": "scooby" },
+        { "question": "Qual è il colore della Mystery Machine?", "options": ["Gialla e rossa", "Verde e azzurra", "Verde acqua con fiori arancioni", "Viola scura"], "correctIndex": 2, "difficulty": "medium", "source": "local", "franchise": "scooby" },
+        { "question": "Chi dice spesso 'Jinkies!'?", "options": ["Daphne", "Fred", "Velma", "Scooby"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Qual è la specialità di Velma nel gruppo?", "options": ["Guidare il furgone", "Costruire trappole", "Analizzare indizi", "Cucinare per il gruppo"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "scooby" },
+        { "question": "Leone il Cane Fifone è prodotto da quale studio?", "options": ["Hanna-Barbera", "Cartoon Network Studios", "Warner Bros Animation", "DreamWorks"], "correctIndex": 1, "difficulty": "hard", "source": "local", "franchise": "scooby" },
+        { "question": "Come si chiama la città di Crystal Cove in quale versione reboot?", "options": ["Mystery Incorporated", "New Scooby-Doo Movies", "Be Cool Scooby-Doo", "A Pup Named Scooby-Doo"], "correctIndex": 0, "difficulty": "hard", "source": "local", "franchise": "scooby" }
+      ]
+    },
+    {
+      "franchise": "anime",
+      "questions": [
+        { "question": "In Dragon Ball Z, chi è il padre di Goku?", "options": ["Vegeta", "Bardock", "Raditz", "Paragus"], "correctIndex": 1, "difficulty": "medium", "source": "local", "franchise": "anime" },
+        { "question": "Qual è il clan di Sasuke Uchiha?", "options": ["Clan Hyuga", "Clan Uchiha", "Clan Senju", "Clan Uzumaki"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Cosa c'è sigillato dentro Naruto Uzumaki?", "options": ["Kyubi - La Volpe a Nove Code", "Eight Tails Ox", "Tre Code", "Cinque Code"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Qual è l'arma di Rufy in One Piece?", "options": ["Spada", "Pistola", "I suoi pugni di gomma", "Un tridente"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Come si chiama la tecnica definitiva di Zoro?", "options": ["Santoryu", "Ittoryu", "Nitoryu", "Yontoryu"], "correctIndex": 0, "difficulty": "medium", "source": "local", "franchise": "anime" },
+        { "question": "Cos'è il Chakra in Naruto?", "options": ["Un tipo di spada", "Energia fisica e spirituale", "Una tecnica specifica", "Un tipo di Jutsu"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Qual è il sogno di Naruto fin da bambino?", "options": ["Diventare il ninja più forte", "Diventare Hokage", "Vendicare il suo clan", "Trovare il leggendario tesoro"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "anime" },
+        { "question": "Chi è il mentore di Goku da bambino?", "options": ["Maestro Roshi", "Kamisama", "Re Kaioh", "Nonno Gohan"], "correctIndex": 3, "difficulty": "hard", "source": "local", "franchise": "anime" },
+        { "question": "Come si chiama il luogo dove si allena Goku nell'Ultra Istinto?", "options": ["Hyperbolic Time Chamber", "Realm of Gods", "Snake Way", "Planet Namek"], "correctIndex": 0, "difficulty": "hard", "source": "local", "franchise": "anime" },
+        { "question": "Qual è l'haki di Re in One Piece?", "options": ["Haki del Colore dell'Armatura", "Haki del Colore dell'Osservazione", "Haki del Conquistatore", "Haki del Drago"], "correctIndex": 2, "difficulty": "hard", "source": "local", "franchise": "anime" }
+      ]
+    },
+    {
+      "franchise": "harry_potter",
+      "questions": [
+        { "question": "Come si chiama la scuola di magia di Harry Potter?", "options": ["Durmstrang", "Beauxbatons", "Hogwarts", "Ilvermorny"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "harry_potter" },
+        { "question": "Chi ha ucciso i genitori di Harry Potter?", "options": ["Bellatrix", "Voldemort", "Peter Minus", "Fenrir"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "harry_potter" },
+        { "question": "Qual è la parola d'ordine per entrare nel dormitorio di Grifondoro?", "options": ["Lumos", "Expecto Patronum", "Ogni episodio è diversa", "Accio"], "correctIndex": 2, "difficulty": "medium", "source": "local", "franchise": "harry_potter" },
+        { "question": "Qual è il soprannome di Albus Silente in italiano?", "options": ["Il Vecchio Mago", "Il Grande Silente", "L'immortale", "Il Saggio"], "correctIndex": 1, "difficulty": "hard", "source": "local", "franchise": "harry_potter" },
+        { "question": "Che animale domestico ha Hermione?", "options": ["Un gufo", "Un rospo", "Un gatto", "Un topo"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "harry_potter" },
+        { "question": "Dove è nascosta la bacchetta dei maghi secondo la leggenda dei Doni della Morte?", "options": ["Nella tomba di Silente", "In un pozzo antico", "Nel bosco proibito", "Nell'anello di Riddle"], "correctIndex": 0, "difficulty": "hard", "source": "local", "franchise": "harry_potter" }
+      ]
+    },
+    {
       "franchise": "disney",
       "questions": [
         { "question": "Chi è il protagonista di Kingdom Hearts?", "options": ["Riku", "Sora", "Kairi", "Mickey"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "disney" },
         { "question": "Qual è l'arma iconica di Sora?", "options": ["Spada Laser", "Keyblade", "Buster Sword", "Gungnir"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "disney" },
-        { "question": "Come si chiama l'amico di Simba col muso lungo?", "options": ["Timon", "Pumbaa", "Zazu", "Rafiki"], "correctIndex": 2, "difficulty": "easy", "source": "local", "franchise": "disney" }
+        { "question": "Come si chiama l'amico fedele di Simba col muso largo?", "options": ["Timon", "Pumbaa", "Zazu", "Rafiki"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "disney" },
+        { "question": "Qual è il potere di Elsa in Frozen?", "options": ["Controllare il fuoco", "Controllare il ghiaccio", "Volare", "Vedere il futuro"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "disney" },
+        { "question": "Chi è il villain principale di Kingdom Hearts?", "options": ["Ansem", "Xehanort", "Xemnas", "Marluxia"], "correctIndex": 1, "difficulty": "hard", "source": "local", "franchise": "disney" },
+        { "question": "Cosa significa 'Hakuna Matata' ne Il Re Leone?", "options": ["Nessun problema", "Vita è bella", "Amicizia vera", "Tutto passa"], "correctIndex": 0, "difficulty": "easy", "source": "local", "franchise": "disney" }
       ]
     },
     {
       "franchise": "final_fantasy",
       "questions": [
         { "question": "Chi è il protagonista di Final Fantasy VII?", "options": ["Squall", "Cloud", "Noctis", "Tidus"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "final_fantasy" },
-        { "question": "Come si chiama la spada enorme di Cloud?", "options": ["Masamune", "Buster Sword", "Gunblade", "Excalibur"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "final_fantasy" }
+        { "question": "Come si chiama la spada enorme di Cloud?", "options": ["Masamune", "Buster Sword", "Gunblade", "Excalibur"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "final_fantasy" },
+        { "question": "Chi è il villain principale di Final Fantasy VII?", "options": ["Kefka", "Sephiroth", "Seifer", "Exdeath"], "correctIndex": 1, "difficulty": "easy", "source": "local", "franchise": "final_fantasy" },
+        { "question": "Come si chiama l'organizzazione antagonista in FF7?", "options": ["Shinra", "Wutai", "AVALANCHE", "Turks"], "correctIndex": 0, "difficulty": "medium", "source": "local", "franchise": "final_fantasy" },
+        { "question": "Qual è la summon acquatica più famosa in Final Fantasy?", "options": ["Ramuh", "Leviathan", "Ifrit", "Bahamut"], "correctIndex": 1, "difficulty": "medium", "source": "local", "franchise": "final_fantasy" }
       ]
     }
-  ],
-  "history": []
+  ]
 }
