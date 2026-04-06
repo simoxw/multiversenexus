@@ -4,6 +4,8 @@ import { ApiService } from "../services/api.service.ts";
 import { characterExtraData } from "../data/characterExtra.ts";
 import charactersData from "../data/characters.json";
 import { getCharacterFallbackImage } from "../ui/image-fallback.ts";
+import { StatsService } from "../services/stats.service.ts";
+import { characterStats } from "../data/characterStats.ts";
 
 export class RosterService {
   private static readonly STORAGE_VERSION = 6;
@@ -26,7 +28,7 @@ export class RosterService {
         this.bench = (data.bench || []) as GameCharacter[];
         this.migrateImages();
         this.syncWithMetadata();
-        if (savedVersion < RosterService.STORAGE_VERSION) this.saveToStorage();
+        if (savedVersion < RosterService.STORAGE_VERSION) this.saveCharacters();
     }
   }
 
@@ -44,7 +46,9 @@ export class RosterService {
         "anime-eren": "eren", "anime-mikasa": "mikasa", "anime-saitama": "saitama",
         "anime-midoriya": "midoriya", "hp-harry-potter": "harry-potter",
         "hp-hermione-granger": "hermione-granger", "hp-severus-snape": "severus-snape",
-        "hp-albus-dumbledore": "albus-dumbledore", "hp-lord-voldemort": "voldemort",
+        "courage-the-cowardly-dog": "courage",
+        "lord-voldemort": "voldemort",
+        "hp-lord-voldemort": "voldemort",
         "hp-luna-lovegood": "luna-lovegood", "hp-rubeus-hagrid": "hagrid",
         "hp-bellatrix-lestrange": "bellatrix", "hp-draco-malfoy": "draco-malfoy",
         "hp-sirius-black": "sirius-black", "ff7-cloud": "cloud", "ff7-sephiroth": "sephiroth",
@@ -88,13 +92,55 @@ export class RosterService {
         char.franchise = meta.franchise;
         char.characterClass = meta.characterClass;
       }
+
+      // Fix stats mancanti (mag, res, luck, spd) da dati base
+      const baseData = characterStats[char.id];
+      if (baseData) {
+        if (char.stats.mag === undefined || char.stats.mag === null) char.stats.mag = baseData.mag;
+        if (char.stats.res === undefined || char.stats.res === null) char.stats.res = baseData.res;
+        if (char.stats.luck === undefined || char.stats.luck === null) char.stats.luck = baseData.luck;
+        if (char.stats.spd === undefined || char.stats.spd === null) char.stats.spd = baseData.spd;
+        
+        // Ricalcolo aggressivo: forza il livello se non presente o se le stats base sono cambiate
+        const level = char.stats.loreLevel || 1;
+        char.stats.loreLevel = level;
+        
+        const expectedStats = StatsService.calculateLevelUpStats(baseData, level, baseData.growthRates);
+        char.stats.hp = expectedStats.hp;
+        char.stats.maxHp = expectedStats.maxHp;
+        char.stats.atk = expectedStats.atk;
+        char.stats.mag = expectedStats.mag;
+        char.stats.res = expectedStats.res;
+        char.stats.luck = expectedStats.luck;
+        char.stats.spd = expectedStats.spd;
+        
+        // Assicura role coerente
+        char.role = baseData.role;
+      }
+
+      // Fix EXP mancante
+      if (char.currentExp === undefined || char.currentExp === null) {
+        char.currentExp = 0;
+      }
+      if (!char.expToNextLevel || char.expToNextLevel <= 0) {
+        char.expToNextLevel = StatsService.calculateExpToNextLevel(char.stats.loreLevel || 1);
+      }
+
+      // Fix equipment mancante
+      if (!char.equipment) {
+        char.equipment = { weapon: null, armor: null, accessory: null };
+      }
+      // Fix activeEffects mancante
+      if (!char.activeEffects) {
+        char.activeEffects = [];
+      }
     };
     this.activeTrio.forEach(c => c && syncChar(c));
     this.bench.forEach(c => syncChar(c));
-    this.saveToStorage();
+    this.saveCharacters();
   }
 
-  private saveToStorage() {
+  public saveCharacters() {
     localStorage.setItem("multiverse_roster", JSON.stringify({
         schemaVersion: RosterService.STORAGE_VERSION,
         activeTrio: this.activeTrio,
@@ -130,7 +176,7 @@ export class RosterService {
 
     // Always apply local images immediately (regardless of whether we just built or loaded from storage)
     this.applyLocalImages();
-    this.saveToStorage();
+    this.saveCharacters();
   }
 
   /** Forces all characters in memory to use their local image from characters.json */
@@ -181,7 +227,7 @@ export class RosterService {
     } else {
       this.bench.splice(benchIndex, 1);
     }
-    this.saveToStorage();
+    this.saveCharacters();
   }
 
   removeFromParty(activeSlotIndex: number) {
@@ -190,7 +236,7 @@ export class RosterService {
     if (char) {
       this.bench.push(char);
       this.activeTrio[activeSlotIndex] = null;
-      this.saveToStorage();
+      this.saveCharacters();
     }
   }
 
@@ -224,37 +270,26 @@ export class RosterService {
         // Avoid duplicates if already in bench
         if (!this.bench.find(c => c.id === character.id)) {
             this.bench.push(character);
-            this.saveToStorage();
+            this.saveCharacters();
         }
     }
   }
 
   addExperience(charId: string, exp: number): string | null {
-    // Find in active or bench
-    let char = this.activeTrio.find(c => c?.id === charId) || this.bench.find(c => c.id === charId);
-    if (!char) return null;
-
-    // Simplistic level up: every 100 EXP = 1 Level
-    const oldLevel = char.stats.loreLevel || 1;
-    const totalExp = (char as any).exp || 0;
-    const newTotalExp = totalExp + exp;
-    (char as any).exp = newTotalExp;
-    
-    const newLevel = Math.floor(newTotalExp / 100) + 1;
-    char.stats.loreLevel = newLevel;
-
-    if (newLevel > oldLevel) {
-        // Boost stats
-        char.stats.maxHp += 10;
-        char.stats.hp = char.stats.maxHp;
-        char.stats.atk += 2;
-        char.stats.def += 1;
-        char.stats.spd += 0.5;
-        this.saveToStorage();
-        return `${char.name} è salito al livello ${newLevel}!`;
+    console.log(`[Roster] Updating ${charId} with +${exp} EXP`);
+    const char = this.activeTrio.find(c => c?.id === charId) || this.bench.find(c => c.id === charId);
+    if (!char) {
+      console.warn("[Roster] CHARACTER NOT FOUND IN ACTIVE OR BENCH:", charId);
+      return null;
     }
 
-    this.saveToStorage();
+    const res = StatsService.addExperience(char, exp);
+    this.saveCharacters();
+    
+    if (res.levelsGained > 0) {
+      console.log(`✨ [Roster] ${char.name} LEVELED UP! Now at lvl ${char.stats.loreLevel}`);
+      return `${char.name} è salito al livello ${char.stats.loreLevel}!`;
+    }
     return null;
   }
 }

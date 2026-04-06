@@ -36,13 +36,24 @@ export class EnemyService {
   }
 
   private static scaleStats(stats: GameCharacter["stats"], factor: number): GameCharacter["stats"] {
+    // Formula bilanciata: crescita più dolce, cap ragionevole
+    // A level 1: factor ~0.6, a level 5: factor ~0.9, a level 10: factor ~1.3
+    const cappedFactor = Math.min(factor, 3.0);
+    
+    // HP scalato diversamente dagli altri stat (cresce più lentamente)
+    const hpFactor = 0.4 + (cappedFactor * 0.3);   // 0.4→1.3 range
+    const statFactor = 0.5 + (cappedFactor * 0.25); // 0.5→1.25 range
+    
     return {
-        hp: Math.round(stats.hp * factor),
-        maxHp: Math.round(stats.maxHp * factor),
-        atk: Math.round(stats.atk * factor),
-        def: Math.round(stats.def * factor),
-        spd: Math.round(stats.spd * factor),
-        loreLevel: Math.max(1, Math.round(factor)),
+        hp: Math.round(stats.hp * hpFactor),
+        maxHp: Math.round(stats.maxHp * hpFactor),
+        atk: Math.round(stats.atk * statFactor),
+        def: Math.round(stats.def * statFactor),
+        mag: Math.round(stats.mag * statFactor),
+        res: Math.round(stats.res * statFactor),
+        luck: Math.round(stats.luck * statFactor),
+        spd: Math.round(stats.spd * statFactor),
+        loreLevel: Math.max(1, Math.round(cappedFactor)),
     };
   }
 }

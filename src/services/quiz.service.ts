@@ -67,24 +67,25 @@ export class QuizService {
   }
 
   /**
-   * Generates a random quiz question for the Hub Archive mode.
+   * Generates a random quiz question for the Hub Archive mode with categorization.
    */
-  static async generateHubQuiz(franchise?: string): Promise<QuizQuestion> {
+  static async generateHubQuiz(category: string = "general"): Promise<QuizQuestion> {
     let allQuestions: QuizQuestion[] = [];
     
-    // Collect from characters
-    (quizPool as any).characters.forEach((c: any) => {
-        if (!franchise || c.questions[0]?.franchise === franchise) {
-            allQuestions.push(...c.questions);
-        }
-    });
-    
-    // Collect from franchises
-    (quizPool as any).franchises.forEach((f: any) => {
-        if (!franchise || f.franchise === franchise) {
-            allQuestions.push(...f.questions);
-        }
-    });
+    if (category === "general") {
+        // Collect everything
+        (quizPool as any).characters.forEach((c: any) => allQuestions.push(...c.questions));
+        (quizPool as any).franchises.forEach((f: any) => allQuestions.push(...f.questions));
+    } else {
+        // Collect by franchise matching
+        (quizPool as any).franchises.forEach((f: any) => {
+            if (f.franchise === category) allQuestions.push(...f.questions);
+        });
+        (quizPool as any).characters.forEach((c: any) => {
+            // Find character's franchise if not directly set
+            if (c.franchise === category) allQuestions.push(...c.questions);
+        });
+    }
 
     if (allQuestions.length === 0) {
         return {
@@ -93,7 +94,7 @@ export class QuizService {
             correctIndex: 0,
             difficulty: "medium",
             source: "local",
-            franchise: "anime"
+            franchise: category as any
         };
     }
 

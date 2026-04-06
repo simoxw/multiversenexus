@@ -1,4 +1,6 @@
-import type { Inventory, Item, GameCharacter } from "../types/game.types.ts";
+import type { Inventory, Item, GameCharacter, Weapon, Armor, Accessory } from "../types/game.types.ts";
+import { EquipmentSystem } from "../entities/equipment-system.ts";
+import { StatsService } from "../services/stats.service.ts";
 
 export class InventoryService {
   private static readonly STORAGE_VERSION = 2;
@@ -67,21 +69,59 @@ export class InventoryService {
     const item = this.inventory.items[itemIdx];
     if (item.quantity <= 0) return false;
 
-    // Apply effects
-    if (item.effect.hp) target.stats.hp = Math.min(target.stats.maxHp, target.stats.hp + item.effect.hp);
-    if (item.effect.mp) target.resource.current = Math.min(target.resource.max, target.resource.current + item.effect.mp);
-    if (item.effect.revive && !target.isAlive) {
-        target.isAlive = true;
-        target.stats.hp = Math.round(target.stats.maxHp * 0.2);
+    // --- CONSUMABLE LOGIC ---
+    if (item.type === "consumable" && item.effect) {
+      if (item.effect.hp) target.stats.hp = Math.min(target.stats.maxHp, target.stats.hp + item.effect.hp);
+      if (item.effect.mp) target.resource.current = Math.min(target.resource.max, target.resource.current + item.effect.mp);
+      if (item.effect.revive && !target.isAlive) {
+          target.isAlive = true;
+          target.stats.hp = Math.round(target.stats.maxHp * 0.2);
+      }
+      item.quantity--;
+    } 
+    // --- EQUIPMENT LOGIC ---
+    else if (item.type === "weapon" && item.stats) {
+      const weapon: Weapon = { id: item.id, name: item.name, atk: item.stats.atk || 0, mag: item.stats.mag, element: item.element };
+      const old = EquipmentSystem.equipWeapon(target, weapon);
+      if (old) this.addItemFromEntity(old, "weapon");
+      item.quantity--;
+    }
+    else if (item.type === "armor" && item.stats) {
+      const armor: Armor = { id: item.id, name: item.name, def: item.stats.def || 0, res: item.stats.res || 0, hp: item.stats.hp };
+      const old = EquipmentSystem.equipArmor(target, armor);
+      if (old) this.addItemFromEntity(old, "armor");
+      item.quantity--;
+    }
+    else if (item.type === "accessory" && item.stats) {
+      const acc: Accessory = { id: item.id, name: item.name, luck: item.stats.luck };
+      const old = EquipmentSystem.equipAccessory(target, acc);
+      if (old) this.addItemFromEntity(old, "accessory");
+      item.quantity--;
     }
 
-    item.quantity--;
     if (item.quantity <= 0) {
         this.inventory.items.splice(itemIdx, 1);
     }
     
+    // Ricalcola statistiche finali
+    target.stats = StatsService.getEffectiveStats(target);
+    
     this.saveToStorage();
     return true;
+  }
+
+  /**
+   * Helper per rimettere in inventario un oggetto disequipaggiato
+   */
+  private addItemFromEntity(entity: Weapon | Armor | Accessory, type: "weapon" | "armor" | "accessory") {
+      this.addItem({
+          id: entity.id,
+          name: entity.name,
+          description: "Oggetto disequipaggiato.",
+          type: type,
+          quantity: 1,
+          stats: (entity as any) // Mapping semplificato dei bonus
+      });
   }
 
   getInventory(): Inventory {

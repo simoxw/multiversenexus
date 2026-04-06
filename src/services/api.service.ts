@@ -7,7 +7,7 @@ export class ApiService {
   private static JIKAN_BASE = "https://api.jikan.moe/v4";
   private static HP_API_BASE = "https://hp-api.onrender.com/api";
   private static DISNEY_API_BASE = "https://api.disneyapi.dev/character";
-  private static readonly CACHE_KEY = "mv_character_cache_v5"; // bumped to v5 to invalidate old external URL caches
+  private static readonly CACHE_KEY = "mv_character_cache_v6"; // bumped to v6 to force fresh data sync
   private static readonly CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 3; // 3 days
 
   static async fetchCharacter(metadata: CharacterMetadata): Promise<GameCharacter> {
@@ -16,10 +16,20 @@ export class ApiService {
       const localData = allChars.find(c => c.id === metadata.id);
 
       // Image: ALWAYS use local file from characters.json, or dicebear fallback. Never an external API image.
-      const imageUrl = localData?.img || `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(metadata.id)}`;
+      let imageUrl = localData?.img || `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(metadata.id)}`;
+      if (localData?.img && !localData.img.startsWith("/")) {
+          imageUrl = `/${localData.img}`;
+      }
       
       const cached = this.getCachedCharacter(metadata.id);
       if (cached) {
+        // SAFETY: Ensure new fields are present even in old cache versions
+        if (cached.currentExp === undefined) cached.currentExp = 0;
+        if (cached.expToNextLevel === undefined) cached.expToNextLevel = 100;
+        if (!cached.stats.luck) cached.stats.luck = 10;
+        if (!cached.stats.mag) cached.stats.mag = 20;
+        if (!cached.stats.res) cached.stats.res = 20;
+        
         // Always override image with the local one (in case cache has old API URLs)
         cached.imageUrl = imageUrl;
         return cached;
@@ -60,6 +70,14 @@ export class ApiService {
         },
         isAlive: true,
         activeEffects: [],
+        currentExp: 0,
+        expToNextLevel: 100,
+        awakeningPoints: 0,
+        equipment: {
+          weapon: null,
+          armor: null,
+          accessory: null
+        }
       };
 
       this.setCachedCharacter(character);
@@ -123,11 +141,14 @@ export class ApiService {
         maxHp: base.hp,
         atk: base.atk,
         def: base.def,
+        mag: base.mag || 20,
+        res: base.res || 20,
+        luck: base.luck || 10,
         spd: base.spd,
         loreLevel: 1
       }
     }
-    return { hp:900, maxHp:900, atk:100, def:100, spd:100, loreLevel:1 }
+    return { hp:900, maxHp:900, atk:100, def:100, mag:100, res:100, luck:50, spd:100, loreLevel:1 }
   }
 
   private static cleanName(name: string): string {
@@ -158,6 +179,14 @@ export class ApiService {
       },
       isAlive: true,
       activeEffects: [],
+      currentExp: 0,
+      expToNextLevel: 100,
+      awakeningPoints: 0,
+      equipment: {
+        weapon: null,
+        armor: null,
+        accessory: null
+      }
     };
   }
 

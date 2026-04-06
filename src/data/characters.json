@@ -7,11 +7,11 @@
     { "id": "fred-jones",       "name": "Fred Jones",           "img": "characters/fred-jones.webp" },
     { "id": "daphne-blake",     "name": "Daphne Blake",         "img": "characters/daphne-blake.webp" },
     { "id": "harry-potter",     "name": "Harry Potter",         "img": "characters/harry-potter.webp" },
-    { "id": "hermione-granger", "name": "Hermione Granger",     "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=hermione-granger" },
+    { "id": "hermione-granger", "name": "Hermione Granger",     "img": "characters/hermione-granger.webp" },
     { "id": "albus-dumbledore", "name": "Albus Silente",        "img": "characters/albus-dumbledore.webp" },
     { "id": "luna-lovegood",    "name": "Luna Lovegood",        "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=luna-lovegood" },
     { "id": "draco-malfoy",     "name": "Draco Malfoy",         "img": "characters/draco-malfoy.webp" },
-    { "id": "sirius-black",     "name": "Sirius Black",         "img": "https://api.dicebear.com/9.x/adventurer/svg?seed=sirius-black" },
+    { "id": "sirius-black",     "name": "Sirius Black",         "img": "characters/sirius-black.webp" },
     { "id": "hagrid",           "name": "Rubeus Hagrid",        "img": "characters/hagrid.webp" },
     { "id": "voldemort",        "name": "Lord Voldemort",       "img": "characters/voldemort.webp" }
   ],

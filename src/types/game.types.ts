@@ -9,11 +9,40 @@ export type StatusEffect =
 export type QuizSource = "local" | "opentrivia"
 export type Difficulty = "easy" | "medium" | "hard"
 export type BattlePhase = "player_turn" | "enemy_turn" | "quiz" | "victory" | "defeat" | "transition"
+export type MoveType = "physical" | "magical" | "hybrid"
+export type Element = "fire" | "ice" | "light" | "dark" | "nonElemental"
+
+export interface Weapon {
+  id: string
+  name: string
+  atk: number
+  mag?: number
+  element?: Element
+}
+
+export interface Armor {
+  id: string
+  name: string
+  def: number
+  res: number
+  hp?: number
+}
+
+export interface Accessory {
+  id: string
+  name: string
+  luck?: number
+  specialEffect?: string
+}
 
 export interface Move {
   id: string
   name: string
   mpCost: number
+  power: number
+  type: MoveType
+  element: Element
+  accuracy: number
   baseDamageMultiplier: number | null
   healAmount: number | null
   healTarget: "self" | "single" | "party" | null
@@ -42,8 +71,21 @@ export interface CharacterStats {
   maxHp: number
   atk: number
   def: number
+  mag: number
+  res: number
   spd: number
+  luck: number
   loreLevel: number
+}
+
+export interface GrowthRates {
+  hp: number
+  atk: number
+  def: number
+  mag: number
+  res: number
+  spd: number
+  luck: number
 }
 
 export interface GameCharacter {
@@ -57,6 +99,14 @@ export interface GameCharacter {
   resource: Resource
   isAlive: boolean
   activeEffects: ActiveEffect[]
+  currentExp: number
+  expToNextLevel: number
+  awakeningPoints: number
+  equipment: {
+    weapon: Weapon | null
+    armor: Armor | null
+    accessory: Accessory | null
+  }
 }
 
 export interface Enemy extends GameCharacter {
@@ -72,15 +122,28 @@ export interface QuizQuestion {
   franchise: Franchise
 }
 
+export interface DamagePopup {
+  id: string
+  value: number
+  isCrit: boolean
+  isHeal: boolean
+  targetId: string // 'enemy' o 'p0','p1','p2'
+  x?: number
+  y?: number
+}
+
 export interface BattleState {
-  party: [GameCharacter, GameCharacter, GameCharacter]
+  party: (GameCharacter | null)[]
   enemy: Enemy
   synergy: number
-  activeTurnIndex: number
+  activeTurnIndex: number | null
   log: string[]
-  phase: BattlePhase
+  phase: "player_turn" | "enemy_turn" | "quiz" | "victory" | "defeat" | "transition"
   quizMultiplier: number
+  backgroundId: number
+  bgClass: string
   pendingMove: Move | null
+  damagePopups: DamagePopup[]
 }
 
 export interface RosterSlot {
@@ -92,8 +155,17 @@ export interface Item {
   id: string
   name: string
   description: string
-  type: "consumable" | "equipment"
-  effect: { hp?: number; mp?: number; revive?: boolean }
+  type: "consumable" | "weapon" | "armor" | "accessory"
+  effect?: { hp?: number; mp?: number; revive?: boolean }
+  stats?: {
+    atk?: number;
+    def?: number;
+    mag?: number;
+    res?: number;
+    hp?: number;
+    luck?: number;
+  }
+  element?: Element
   quantity: number
 }
 

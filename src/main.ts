@@ -10,6 +10,10 @@ import { RosterService } from './engine/roster.service.ts'
 import { QuizService } from './services/quiz.service.ts'
 import { InventoryService } from './engine/inventory.service.ts'
 import { StatsModalUI } from './ui/stats-modal.ui.ts'
+import { characterStats } from "./data/characterStats";
+import { StatsService } from './services/stats.service.ts'
+import { ShopUI } from './ui/shop.ui.ts'
+import { CodesUI } from './ui/codes.ui.ts'
 import type { GameCharacter } from './types/game.types.ts'
 
 import { LoreArchiveUI } from './ui/lore-archive.ui.ts'
@@ -84,6 +88,7 @@ class GameManager {
   private battleEngine: BattleEngine | null = null;
   private battleTimer: number | null = null;
   private isHandlingQuiz = false;
+  private isHandlingVictory = false;
 
   private lorePoints: number = 0;
   private unlockedCharacters: string[] = [];
@@ -106,7 +111,7 @@ class GameManager {
     console.log("Multiverse Nexus Initializing...");
     await this.rosterService.initializeRoster([
       "scooby-doo",
-      "courage", 
+      "courage",
       "goku"
     ]);
     this.render();
@@ -120,7 +125,12 @@ class GameManager {
     }
     const avgLevel = this.rosterService.getActiveAverageLevel();
     const enemy = await EnemyService.generateEnemy(avgLevel, false);
-    this.battleEngine = new BattleEngine(party as any, enemy);
+    
+    // Genera sfondo casuale e passalo all'engine
+    const bgClass = `bg-style-${Math.floor(Math.random() * 5) + 1}`;
+    this.battleEngine = new BattleEngine(party as any, enemy, bgClass);
+
+    this.isHandlingVictory = false;
     this.currentView = 'BATTLE';
     this.render();
     this.startBattleLoop();
@@ -128,33 +138,84 @@ class GameManager {
 
   startBattleLoop() {
     let lastPhase = '';
+    let lastActiveIndex: number | null = null;
+    let lastLogLength = 0;
     this.battleTimer = window.setInterval(() => {
-      if (this.battleEngine && this.currentView === 'BATTLE') {
-        const state = this.battleEngine.getState();
-        if (state.phase === 'quiz') {
-            if (!this.isHandlingQuiz) {
-                this.isHandlingQuiz = true;
-                this.handleQuiz();
-            }
-            return;
+      if (!this.battleEngine || this.currentView !== 'BATTLE') return;
+
+      const state = this.battleEngine.getState();
+
+      // --- VICTORY ---
+      if (state.phase === 'victory') {
+        if (!this.isHandlingVictory) {
+          this.isHandlingVictory = true;
+          if (this.battleTimer) clearInterval(this.battleTimer);
+          this.handleVictory();
         }
-        
-        if (state.phase !== lastPhase) {
-          BattleUI.render(
-            state,
-            (move: any) => this.battleEngine?.executeMove(move).then(() => this.render()),
-            () => { this.currentView = 'INVENTORY'; this.render(); },
-            () => { 
-                if (this.battleTimer) clearInterval(this.battleTimer);
-                this.battleEngine = null;
-                this.currentView = 'HUB';
-                this.render();
+        return;
+      }
+
+      // --- DEFEAT ---
+      if (state.phase === 'defeat') {
+        if (this.battleTimer) clearInterval(this.battleTimer);
+        setTimeout(() => {
+          // Restore party HP partially (30%) so they are not stuck at 0
+          this.rosterService.getActiveTrio().forEach(char => {
+            if (char) {
+              char.stats.hp = Math.ceil(char.stats.maxHp * 0.3);
+              char.resource.current = Math.ceil(char.resource.max * 0.5);
+              char.isAlive = true;
             }
-          );
-          lastPhase = state.phase;
-        } else {
-          BattleUI.updateBars(state);
+          });
+          this.rosterService.saveCharacters();
+          this.battleEngine = null;
+          this.currentView = 'HUB';
+          this.render();
+        }, 3000);
+        return;
+      }
+
+      // --- QUIZ ---
+      if (state.phase === 'quiz') {
+        if (!this.isHandlingQuiz) {
+          this.isHandlingQuiz = true;
+          this.handleQuiz();
         }
+        return;
+      } else {
+        this.isHandlingQuiz = false;
+      }
+
+      // --- RENDER / UPDATE BARS ---
+      const changed = state.phase !== lastPhase ||
+        (state.phase === 'player_turn' && state.activeTurnIndex !== lastActiveIndex) ||
+        state.log.length !== lastLogLength;
+
+      if (changed) {
+        BattleUI.render(
+          state,
+          (move: any) => this.battleEngine?.executeMove(move),
+          () => { this.currentView = 'INVENTORY'; this.render(); },
+          () => {
+            if (this.battleTimer) clearInterval(this.battleTimer);
+            this.rosterService.getActiveTrio().forEach(char => {
+              if (char) {
+                char.stats.hp = char.stats.maxHp;
+                char.resource.current = char.resource.max;
+                char.isAlive = true;
+              }
+            });
+            this.rosterService.saveCharacters();
+            this.battleEngine = null;
+            this.currentView = 'HUB';
+            this.render();
+          }
+        );
+        lastPhase = state.phase;
+        lastActiveIndex = state.activeTurnIndex;
+        lastLogLength = state.log.length;
+      } else {
+        BattleUI.updateBars(state);
       }
     }, 50);
   }
@@ -167,36 +228,32 @@ class GameManager {
             this.inventoryService.getInventory().currency,
             () => this.startBattle(),
             () => { this.currentView = 'ROSTER'; this.render(); },
-            () => { this.currentView = 'INVENTORY'; this.render(); }
+            () => { this.currentView = 'INVENTORY'; this.render(); },
+            () => ShopUI.render(() => this.render()),
+            () => CodesUI.render((code) => {
+              this.handleApplyCode(code);
+              return true;
+            }, () => this.render())
         );
         break;
       case 'BATTLE':
+        // Battle is driven entirely by startBattleLoop — render() only does initial draw
         if (this.battleEngine) {
             BattleUI.render(
                 this.battleEngine.getState(),
-                (move) => { if (this.battleEngine) { this.battleEngine.executeMove(move); this.render(); } },
+                (move) => { if (this.battleEngine) { this.battleEngine.executeMove(move); } },
                 () => { this.currentView = 'INVENTORY'; this.render(); },
-                () => { 
+                () => {
                     if (this.battleTimer) clearInterval(this.battleTimer);
+                    this.rosterService.getActiveTrio().forEach(char => {
+                      if (char) { char.stats.hp = char.stats.maxHp; char.resource.current = char.resource.max; char.isAlive = true; }
+                    });
+                    this.rosterService.saveCharacters();
                     this.battleEngine = null;
                     this.currentView = 'HUB';
                     this.render();
                 }
             );
-            
-            const state = this.battleEngine.getState();
-            if (state.phase === 'victory') {
-                if (this.battleTimer) clearInterval(this.battleTimer);
-                this.handleVictory();
-            } else if (state.phase === 'defeat') {
-                if (this.battleTimer) clearInterval(this.battleTimer);
-                setTimeout(() => {
-                    this.currentView = 'HUB';
-                    this.render();
-                }, 3000);
-            } else if (state.phase === 'quiz') {
-                this.handleQuiz();
-            }
         }
         break;
       case 'ROSTER':
@@ -223,7 +280,8 @@ class GameManager {
             },
             (itemId) => {
                 const isInBattleTemp = !!this.battleEngine; 
-                const targetIdx = isInBattleTemp ? this.battleEngine!.getState().activeTurnIndex : 0;
+                const battleState = isInBattleTemp ? this.battleEngine!.getState() : null;
+                const targetIdx = battleState?.activeTurnIndex !== null && battleState?.activeTurnIndex !== undefined ? battleState.activeTurnIndex : 0;
                 const target = this.rosterService.getActiveTrio()[targetIdx];
                 
                 if (target && this.inventoryService.useItem(itemId, target)) {
@@ -264,6 +322,43 @@ class GameManager {
     }
   }
 
+  handleApplyCode(code: string): boolean {
+    if (code === "1111") {
+        this.rosterService.getActiveTrio().forEach(char => {
+            if (char) {
+                char.stats.hp = char.stats.maxHp;
+                char.resource.current = char.resource.max;
+            }
+        });
+      alert("⚠️ Sincronizzazione Party Ripristinata!");
+      return true;
+    } else if (code === "3333") {
+      this.inventoryService.addCurrency(1000);
+      alert("✨ 1000 Nexus Shards ottenuti!");
+      return true;
+    } else if (code === "9999") {
+      this.rosterService.getActiveTrio().forEach(char => {
+          if (char) {
+              char.stats.loreLevel = Math.max(char.stats.loreLevel, 2);
+              char.currentExp = 0;
+              char.expToNextLevel = StatsService.calculateExpToNextLevel(char.stats.loreLevel);
+              const base = characterStats[char.id];
+              if (base) {
+                char.stats = StatsService.calculateLevelUpStats(base, char.stats.loreLevel, base.growthRates);
+              }
+              char.stats.hp = char.stats.maxHp;
+          }
+      });
+      this.rosterService.saveCharacters();
+      alert("🚀 REFRESH COMPLETO: Team livellato e sincronizzato!");
+      return true;
+    } else {
+      alert("❌ Codice non valido");
+    }
+    this.render();
+    return false;
+  }
+
   async handleQuiz() {
     if (!this.battleEngine) return;
     const state = this.battleEngine.getState();
@@ -283,23 +378,54 @@ class GameManager {
   async handleVictory() {
     if (!this.battleEngine) return;
     const state = this.battleEngine.getState();
-    
-    // Rewards
-    this.inventoryService.addCurrency(50);
-    state.log.push(`✨ Hai ottenuto 50 Frammenti di Memoria!`);
-    
-    // EXP: 100 EXP for each active member
-    state.party.forEach(char => {
-        if (char.isAlive) {
-            const levelUpMsg = this.rosterService.addExperience(char.id, 100);
-            if (levelUpMsg) state.log.push(`🎊 ${levelUpMsg}`);
-        }
+
+    // 1. RIPRISTINO IMMEDIATO (Safe Check)
+    this.rosterService.getActiveTrio().forEach(char => {
+      if (char) {
+        char.stats.hp = char.stats.maxHp;
+        if (char.resource) char.resource.current = char.resource.max;
+        char.isAlive = true;
+      }
     });
-    
+
+    // EXP proporzionale al livello del nemico
+    const enemyLevel = state.enemy.stats.loreLevel || 1;
+    const baseExp = 80 + (enemyLevel * 20);
+    const currency = 30 + (enemyLevel * 10);
+
+    // Rewards
+    this.inventoryService.addCurrency(currency);
+    state.log.push(`✨ Vittoria! +${currency} Frammenti di Memoria!`);
+
+    // 2. AGGIUNTO EXP (con protezione)
+    state.party.forEach(char => {
+      if (!char) return;
+      const exp = char.isAlive ? baseExp : Math.floor(baseExp * 0.5);
+      
+      try {
+        const levelUpMsg = this.rosterService.addExperience(char.id, exp);
+        if (levelUpMsg) state.log.push(`🎊 ${levelUpMsg}`);
+      } catch (e) {
+        console.error("Error adding exp to", char.name, e);
+      }
+      state.log.push(`⭐ ${char.name} +${exp} EXP`);
+    });
+
+    this.rosterService.saveCharacters();
+
+    // Aggiorna UI con le ricompense visibili
+    BattleUI.render(
+      state,
+      () => {},
+      () => {},
+      () => {}
+    );
+
     setTimeout(() => {
-        this.currentView = 'HUB';
-        this.render();
-    }, 4000);
+      this.battleEngine = null;
+      this.currentView = 'HUB';
+      this.render();
+    }, 3500);
   }
 
   async handleCapture() {
@@ -337,17 +463,21 @@ class GameManager {
     askNext();
   }
 
+
   handleShowStats(charId: string) {
     let char: GameCharacter | null = null;
-    if (this.battleEngine) {
-        const state = this.battleEngine.getState();
-        if (state.enemy.id === charId) char = state.enemy;
-        else char = (state.party.find(p => p.id === charId) || null) as GameCharacter | null;
-    }
-    
+
+    // Use roster data first to ensure saved level/XP values are authoritative.
+    char = this.rosterService.getActiveTrio().find(p => p?.id === charId) || null as GameCharacter | null;
     if (!char) {
-        char = this.rosterService.getBench().find(p => p.id === charId) || 
-               (this.rosterService.getActiveTrio().find(p => p?.id === charId) || null) as GameCharacter | null;
+      char = this.rosterService.getBench().find(p => p?.id === charId) || null as GameCharacter | null;
+    }
+
+    // Fallback to battle state only if roster does not contain the requested character.
+    if (!char && this.battleEngine) {
+      const state = this.battleEngine.getState();
+      if (state.enemy.id === charId) char = state.enemy;
+      else char = (state.party.find(p => p?.id === charId) || null) as GameCharacter | null;
     }
 
     if (char) {
